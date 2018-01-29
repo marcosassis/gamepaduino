@@ -1,152 +1,83 @@
-/* SOON
-
 #ifndef _GAMEPAD_MIDI_H
 #define _GAMEPAD_MIDI_H
 
 #include "gamepad.h"
+#include "xmidiusb.h"
 
 
-//#define SETBIT(port, abit) ( (port) |= (1 << (abit)) )
-//#define CLEARBIT(port, abit) ( (port) &= ~(1 << (abit)) )
-//#define ISSETBIT(value, bit) ((value) & _BV(bit))
-//#define ISCLEARBIT(value, bit) (~value) & _BV(bit)))
-
-
-
-
-int get_id_by_name(String aname, String* names, unsigned max_names);
-
-
-
-class gamepad {
-    uint8_t n_buttons;
-    const uint8_t id;
-
-
-  protected:
-
-    virtual void latch() = 0;
+template<class gamepad_type>
+class gamepad_midi: public gamepad_type {
+    int8_t* note_map;
+    int8_t* channel_map;
+    int8_t* velocity_map;
+    XMIDIUSB_class& XMIDIUSB_;
 
   public:
 
-    gamepad(uint8_t id, uint8_t n_buttons)
-      : id(id), n_buttons(n_buttons)
+    typedef gamepad_type gamepad_base;
+    static const int8_t DEAFULT_CHANNEL = 0;
+    static const int8_t DEAFULT_VELOCITY = 100;
+
+    gamepad_midi(const gamepad_base& base,
+                 int8_t* note_map, int8_t* channel_map, int8_t* velocity_map,
+                 XMIDIUSB_class& XMIDIUSB_instance)
+      : gamepad_base(base),
+        note_map(note_map), note_map(note_map), note_map(note_map),
+        XMIDIUSB_(XMIDIUSB_instance)
     {}
 
-    virtual bool get_button_state(uint8_t index) const = 0;
-    virtual void set_button_state(uint8_t index, bool bs) = 0;
-
-    virtual bool button_state_has_changed(uint8_t index) const = 0;
-
-    virtual String* get_button_names() const = 0;
-
-    virtual void read() = 0;
-    /*
-      {
-      latch();
-      for(uint8_t i = 0; i<n_buttons; ++i)
-        set_button_state(i, read_next_bit() );
-      }
-    /
-
-    uint8_t get_id() const {
-      return id;
-    }
-    uint8_t get_n_buttons() const {
-      return n_buttons;
-    }
-
-    virtual int get_button_id_by_name(String aname) const {
-      return get_id_by_name(aname, get_button_names(), n_buttons);
-    }
-};
-
-
-
-
-// bit representation for gamepads that use it
-template<typename uint_type>
-class bit_gamepad: public gamepad {
-
-  protected:
-    uint_type buttons = 0; // each bit is a button, positive logic
-    uint_type buttons_last = 0;
-
-    virtual void read_imp() = 0;
-
-  public:
-
-    bit_gamepad(uint8_t id, uint8_t n_buttons)
-      : gamepad(id, n_buttons)
+    gamepad_midi(const gamepad_base& base,
+                 int8_t* note_map, int8_t* channel_map=NULL, int8_t* velocity_map=NULL)
+      : gamepad_base(base),
+        note_map(note_map), channel_map(channel_map), velocity_map(velocity_map),
+        XMIDIUSB_(XMIDIUSB)
     {}
 
-    virtual bool get_button_state(uint8_t index) const {
-      //return bit_is_set(buttons, index);
-      return buttons & (1 << index);
+    virtual void flush_usb() {
+      XMIDIUSB_.flush();
     }
-
-    virtual void set_button_state(uint8_t index, bool bs) {
-      if (bs)
-        //setb(buttons,index);
-        //SETBIT(buttons,index);
-        buttons |= (1 << (index));
-      else
-        //clrb(buttons,index);
-        //CLEARBIT(buttons,index);
-        buttons &= ~(1 << (index));
-    }
-
-    virtual uint_type buttons_changed_mask() {
-      return buttons_last ^ buttons;
-    }
-
-    virtual bool button_state_has_changed(uint8_t index) const {
-      //return ((buttons_changed_mask()) & _BV(index));
-      return buttons_changed_mask() & (1 << index);
-    }
-
-    virtual void read() {
-      buttons_last = buttons;
-      buttons = 0;
-      noInterrupts();
-      latch();
-      read_imp();
-      interrupts();
-    }
-
-    uint_type get_buttons() { // each bit is a button, positive logic
-      return buttons;
-    }
-    uint_type get_buttons_last() {
-      return buttons_last;
-    }
-};
-
-
-class SNES_gamepad: public bit_gamepad<uint16_t> {
-  uint8_t latch_pin;
-  uint8_t clock_pin;
-  uint8_t data_pin;
-
-  protected:
-
-    virtual void latch();
-    virtual void read_imp();
     
-  public:
+    virtual void read() {
+      gamepad_base::read();
+      for(uint8_t i=0; i<get_n_buttons(); ++i)
+        if(note_map[i]>-128 && button_state_has_changed(i))
+          note_onoroff(i,get_button_state(i));
+          
+      flush_usb();
+    }
 
-    static const String names[12];
+    virtual void note_onoroff(uint8_t i, bool isnoteon) {
+      Serial.print(i); Serial.print("\t"); Serial.println(note_map[i]);
+      uint8_t c = channel_map? channel_map[i] : DEAFULT_CHANNEL;
+      uint8_t v = velocity_map? velocity_map[i] : DEAFULT_VELOCITY;
+      if(note_map)
+        if(isnoteon)
+          XMIDIUSB_.note_on(c, note_map[i], v);
+        else
+          XMIDIUSB_.note_off(c, note_map[i], v);
+    }
 
-    SNES_gamepad(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
-      : bit_gamepad<uint16_t>(id, 12), latch_pin(latch_pin), clock_pin(clock_pin), data_pin(data_pin)
-    {}
+    virtual void note_off(uint8_t i) {
+      note_onoroff(i,false);
+    }
+    virtual void note_on(uint8_t i) {
+      note_onoroff(i,true);
+    }
 
-    virtual String* get_button_names() const {
-      return names;
+    const int8_t get_note(uint8_t i) const {
+      if(i>=get_n_buttons())
+        return -128;
+      
+      return note_map[i];
+    }
+
+    void set_note(uint8_t i, uint8_t note) {
+      if(i>=get_n_buttons())
+        return;
+      
+      note_map[i] = note;
     }
 };
 
 
 #endif // _GAMEPAD_MIDI_H
-
-*/
