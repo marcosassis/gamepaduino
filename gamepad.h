@@ -307,15 +307,6 @@ public:
     latch();
     read_imp();
     interrupts();
-
-    Serial.print(unsigned(get_dpad())); Serial.print("\t"); Serial.println(buttons,BIN);
-    if(get_dpad()) {
-      Serial.print(get_dpad()->is_up()); Serial.print("\t");
-      Serial.print(get_dpad()->is_down()); Serial.print("\t");
-      Serial.print(get_dpad()->is_left()); Serial.print("\t");
-      Serial.println(get_dpad()->is_right());
-    }
-      
   }
 
   uint_type get_buttons() { // each bit is a button, positive logic

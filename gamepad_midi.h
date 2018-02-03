@@ -5,84 +5,123 @@
 #include "xmidiusb.h"
 
 
-template<class gamepad_type>
+template<class gamepad_type, class XMIDIUSB_type=XMIDIUSB_class>
 class gamepad_midi: public gamepad_type {
-    int8_t* note_map;
-    int8_t* channel_map;
-    int8_t* velocity_map;
-    XMIDIUSB_class& XMIDIUSB_;
+protected:
+  uint8_t channel;
+  uint8_t velocity;
 
-  public:
+public:
 
-    typedef gamepad_type gamepad_base;
-    static const int8_t DEAFULT_CHANNEL = 0;
-    static const int8_t DEAFULT_VELOCITY = 100;
+  typedef gamepad_type gamepad_base;
+  typedef XMIDIUSB_type XMIDIUSB_t;
 
-    gamepad_midi(const gamepad_base& base,
-                 int8_t* note_map, int8_t* channel_map, int8_t* velocity_map,
-                 XMIDIUSB_class& XMIDIUSB_instance)
-      : gamepad_base(base),
-        note_map(note_map), note_map(note_map), note_map(note_map),
-        XMIDIUSB_(XMIDIUSB_instance)
-    {}
+  XMIDIUSB_t& XMIDIUSB_;
 
-    gamepad_midi(gamepad_base& base,
-                 int8_t* note_map, int8_t* channel_map=NULL, int8_t* velocity_map=NULL)
-      : gamepad_base(base),
-        note_map(note_map), channel_map(channel_map), velocity_map(velocity_map),
-        XMIDIUSB_(XMIDIUSB)
-    {}
 
-    virtual void flush_usb() {
-      XMIDIUSB_.flush();
-    }
+  gamepad_midi(gamepad_base& base, XMIDIUSB_t& XMIDIUSB_instance, uint8_t channel=0, uint8_t velocity=100)
+    : gamepad_base(base), XMIDIUSB_(XMIDIUSB_instance), channel(channel), velocity(velocity)
+  {}
+
+  gamepad_midi(gamepad_base& base, uint8_t channel=0, uint8_t velocity=100)
+    : gamepad_base(base), XMIDIUSB_(XMIDIUSB), channel(channel), velocity(velocity)
+  {}
+
+  virtual void flush_usb() {
+    XMIDIUSB_.flush();
+  }
     
-    virtual void read() {
-      gamepad_base::read();
-      for(uint8_t i=0; i<get_n_buttons(); ++i)
-        if(note_map[i]>-128 && button_state_has_changed(i))
-          action_button_changed(i);
+  virtual void read() {
+    gamepad_base::read();
+    for(uint8_t i=0; i<get_n_buttons(); ++i)
+      if(button_state_has_changed(i))
+        action_button_changed(i);
           
-      flush_usb();
-    }
+    flush_usb();
+  }
 
-    virtual void action_button_changed(uint8_t i) {
-      note_onoroff(i,get_button_state(i));
-    }
+  virtual void action_button_changed(uint8_t i) = 0;
 
-    virtual void note_onoroff(uint8_t i, bool isnoteon) {
-      if(i>=get_n_buttons())
-        return;
-      uint8_t c = channel_map? channel_map[i] : DEAFULT_CHANNEL;
-      uint8_t v = velocity_map? velocity_map[i] : DEAFULT_VELOCITY;
-      if(note_map)
-        if(isnoteon)
-          XMIDIUSB_.note_on(c, note_map[i], v);
-        else
-          XMIDIUSB_.note_off(c, note_map[i], v);
-    }
+  virtual void note_on(uint8_t c, uint8_t n, uint8_t v) {
+    if(c<128 && n<128 && v<128)
+      XMIDIUSB_.note_on(c, n, v);
+  }
+  virtual void note_off(uint8_t c, uint8_t n, uint8_t v) {
+    if(c<128 && n<128 && v<128)
+      XMIDIUSB_.note_off(c, n, v);
+  }
 
-    virtual void note_off(uint8_t i) {
-      note_onoroff(i,false);
-    }
-    virtual void note_on(uint8_t i) {
-      note_onoroff(i,true);
-    }
+  virtual void note_on(uint8_t n, uint8_t v) {
+    note_on(channel, n, v);
+  }
+  virtual void note_off(uint8_t n, uint8_t v) {
+    note_off(channel, n, v);
+  }
+  virtual void note_on(uint8_t n) {
+    note_on(channel, n, velocity);
+  }
+  virtual void note_off(uint8_t n) {
+    note_off(channel, n, velocity);
+  }
 
-    const int8_t get_note(uint8_t i) const {
-      if(i>=get_n_buttons())
-        return -128;
-      
-      return note_map[i];
-    }
-
-    void set_note(uint8_t i, uint8_t note) {
-      if(i>=get_n_buttons())
-        return;
-      
-      note_map[i] = note;
-    }
+  uint8_t get_channel() const {
+    return channel;
+  }
+  void set_channel(uint8_t newchannel) {
+    channel=newchannel;
+  }
+  uint8_t get_velocity() const {
+    return velocity;
+  }
+  void set_velocity(uint8_t newvelocity) {
+    velocity=newvelocity;
+  }
 };
+
+
+
+template<class gamepad_type, class XMIDIUSB_type=XMIDIUSB_class>
+struct note_map: public gamepad_midi<gamepad_type,XMIDIUSB_type> {
+  typedef XMIDIUSB_type XMIDIUSB_t;
+  typedef gamepad_midi<gamepad_type,XMIDIUSB_type> gamepad_midi_base;
+  typedef gamepad_type gamepad_t;
+  
+  int8_t* pitch_map;
+
+  note_map(gamepad_type& base, XMIDIUSB_t& XMIDIUSB_instance,
+           uint8_t pitch_map[], uint8_t channel=0, uint8_t velocity=100)
+  : gamepad_midi_base(base, XMIDIUSB_instance, channel, velocity), pitch_map(pitch_map)
+  {}
+  note_map(gamepad_type& base, int8_t pitch_map[], uint8_t channel=0, uint8_t velocity=100)
+  : gamepad_midi_base(base, channel, velocity), pitch_map(pitch_map)
+  {}
+      
+    
+  virtual int8_t get_note(uint8_t i) const {
+    if(i>=get_n_buttons())
+      return -128;
+    
+    return pitch_map[i];
+  }
+
+  virtual void set_note(uint8_t i, int8_t note) {
+    if(i>=get_n_buttons())
+      return;
+      
+    pitch_map[i] = note;
+  }
+  
+  virtual void action_button_changed(uint8_t i) {
+    int8_t n = get_note(i);
+    if(n>=0) {
+      if(get_button_state(i))
+        note_on(n);
+      else
+        note_off(n);
+    }
+  }
+};
+
 
 
 #endif // _GAMEPAD_MIDI_H

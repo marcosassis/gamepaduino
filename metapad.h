@@ -1,47 +1,52 @@
 #ifndef _METAPAD_H
 #define _METAPAD_H
 
-#include "gamepad.h"
-#include "xmidiusb.h"
+#include "gamepad_midi.h"
 
-//                                              0    1    2         3        4     5       6       7        8    9   10   11
-//static const String SNES_gamepad::names[] = {"B", "Y", "select", "start", "up", "down", "left", "right", "A", "X", "L", "R"};
+template<class gamepad_type, class XMIDIUSB_type=XMIDIUSB_class>
+struct metapad: public note_map<gamepad_type,XMIDIUSB_type> {
+  typedef XMIDIUSB_type XMIDIUSB_t;
+  typedef note_map<gamepad_type,XMIDIUSB_type> gamepad_midi_base;
+  typedef gamepad_type gamepad_t;
 
+  uint8_t base_pitch;
+  uint8_t tone_mod;
+  int8_t octave_shift;
 
-template<class gamepad_type>
-class metapad: public gamepad_midi<gamepad_type> {
-    int8_t** intervals;
+  metapad(gamepad_type& base, XMIDIUSB_t& XMIDIUSB_instance,
+          uint8_t intervals[], uint8_t base_pitch=69, uint8_t channel=0, uint8_t velocity=100)
+  : gamepad_midi_base(base, XMIDIUSB_instance, intervals, channel, velocity),
+    base_pitch(base_pitch), tone_mod(0), octave_shift(0)
+  {}
+  metapad(gamepad_type& base, uint8_t intervals[], uint8_t base_pitch=69, uint8_t channel=0, uint8_t velocity=100)
+  : gamepad_midi_base(base, intervals, channel, velocity), base_pitch(base_pitch), tone_mod(0), octave_shift(0)
+  {}
+  
+  
+  virtual int8_t get_note(uint8_t i) const {
+    return int(gamepad_midi_base::get_note(i) + base_pitch + tone_mod + octave_shift*12)%128;
+  }
 
-  public:
-
-    typedef gamepad_midi<gamepad_type> gamepad_base;
-
-    gamepad_midi(const gamepad_type& basebase,
-                 int8_t** intervals, int8_t* channel_map, int8_t* velocity_map,
-                 XMIDIUSB_class& XMIDIUSB_instance)
-      : gamepad_base(basebase, *intervals, channel_map, velocity_map, XMIDIUSB_instance)
-    {}
-    
-    gamepad_midi(const gamepad_type& basebase,
-                 int8_t** intervals, int8_t* channel_map=NULL, int8_t* velocity_map=NULL)
-      : gamepad_base(basebase, *intervals, channel_map, velocity_map, XMIDIUSB)
-    {}
-    
-    virtual void action_button_changed(uint8_t i) {
-      note_onoroff( i, get_button_state(i) );
+  virtual void action_button_changed(uint8_t i)
+  {  
+    if(get_dpad()) {
+      if(get_dpad()->is_up()) {
+        tone_mod = (tone_mod >= 11) ? 0 : tone_mod+1;
+      }
+      if(get_dpad()->is_down()) {
+        tone_mod = (tone_mod <= 0) ? 11 : tone_mod-1;
+      }
+      if(get_dpad()->is_left()) {
+        --octave_shift;
+        //base_pitch = (base_pitch-12)%128;
+      }
+      if(get_dpad()->is_right()) {
+        ++octave_shift;
+        //base_pitch = (base_pitch+12)%128;
+      }
     }
-
-    virtual void note_onoroff(uint8_t i, bool isnoteon) {
-      Serial.print(i); Serial.print("\t"); Serial.println(note_map[i]);
-      uint8_t c = channel_map? channel_map[i] : DEAFULT_CHANNEL;
-      uint8_t v = velocity_map? velocity_map[i] : DEAFULT_VELOCITY;
-      if(note_map)
-        if(isnoteon)
-          XMIDIUSB_.note_on(c, note_map[i], v);
-        else
-          XMIDIUSB_.note_off(c, note_map[i], v);
-    }
-
+    gamepad_midi_base::action_button_changed(i);
+  }
 };
 
 

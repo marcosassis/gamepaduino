@@ -34,6 +34,7 @@ void SNES_gamepad::read_imp() {
   buttons = ~buttons; //workaround, a button pressed is read as a '0'(pull ups), jus inversing them to my taste.
 }
 
+//                                            0    1    2         3        4     5       6       7        8    9   10   11
 static const String SNES_gamepad::names[] = {"B", "Y", "select", "start", "up", "down", "left", "right", "A", "X", "L", "R"};
 
 
