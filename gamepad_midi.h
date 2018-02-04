@@ -15,8 +15,8 @@ public:
 
   typedef gamepad_type gamepad_base;
   typedef XMIDIUSB_type XMIDIUSB_t;
-
   XMIDIUSB_t& XMIDIUSB_;
+
 
 
   gamepad_midi(gamepad_base& base, XMIDIUSB_t& XMIDIUSB_instance, uint8_t channel=0, uint8_t velocity=100)
@@ -75,6 +75,10 @@ public:
   }
   void set_velocity(uint8_t newvelocity) {
     velocity=newvelocity;
+  }
+
+  virtual XMIDIUSB_t& XMIDIUSB_instance() {
+    return XMIDIUSB_;
   }
 };
 

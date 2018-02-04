@@ -1,6 +1,7 @@
 //#include "gamepad.h"
 //#include "gamepad_joystick_hid.h"
 //#include "gamepad_midi.h"
+#define _METAPAD_DEBUG
 #include "metapad.h"
 
 const uint8_t CLOCK_PIN = 9;//4;
@@ -10,18 +11,16 @@ const uint8_t DATA_PIN = 7;
 SNES_gamepad p1(1, DATA_PIN, CLOCK_PIN, LATCH_PIN);
 //SNES_hid p1(1, DATA_PIN, CLOCK_PIN, LATCH_PIN);
 
-const int8_t intervalos_de_effe[] = {3, 10, -128, -128, -128, -128, -128, -128, 5, 7, 0, 6};
-//const int8_t intervalos_de_marcos[] = {3, 10, 2, 1, 4, 8, 9, 11, 5, 7, 0, 6};
-metapad<SNES_gamepad> p1midi(p1, intervalos_de_effe);
-
-//uint8_t ref_note = 69; // A4
+//                      0  1  2       3      4   5     6     7      8  9  10 11
+//              enum b {B, Y, select, start, up, down, left, right, A, X, L, R};
+const int8_t blues[] = {3, 10, -128, -128, -128, -128, -128, -128, 5, 7, 0, 6}; 
+metapad<SNES_gamepad> p1midi(p1, blues, 0); // 69=A4 ref.: midi specs
 
 void setup() {
-  //Serial.begin(9600);
-  //Serial.println("hello");
-  //for(uint8_t i=0; i<p1midi.get_n_buttons(); ++i) {
-    //p1midi.set_note(i, (p1midi.get_note(i)+ref_note)%128);
-  //}
+#ifdef _METAPAD_DEBUG
+  Serial.begin(9600);
+  Serial.println("hello"); // don't know why never can see this
+#endif
 }
 
 void loop() {

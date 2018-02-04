@@ -26,6 +26,13 @@ class XMIDIUSB_class: public MIDI_ {
       sendMIDI(noteOff);
     }
 
+    void all_sounds_off(byte channel) {
+      CC(channel,120,0);
+    }
+    void all_notes_off(byte channel) {
+      CC(channel,123,0);
+    }
+
     void SRT(byte c) {
       write(&c,1);
     }
