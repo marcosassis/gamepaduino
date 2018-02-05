@@ -1,29 +1,31 @@
 #ifndef _GAMEPAD_MIDI_H
 #define _GAMEPAD_MIDI_H
 
-#include "gamepad.h"
+//#include "gamepad.h"
+#include "SNES_gamepad.h"
 #include "xmidiusb.h"
 
 
 template<class gamepad_type, class XMIDIUSB_type=XMIDIUSB_class>
-class gamepad_midi: public gamepad_type {
+class gamepad_midi: public active_gamepad<gamepad_type> {
 protected:
   uint8_t channel;
   uint8_t velocity;
 
 public:
 
-  typedef gamepad_type gamepad_base;
+  typedef gamepad_type gamepad_t;
+  typedef active_gamepad<gamepad_type> gamepad_base;
   typedef XMIDIUSB_type XMIDIUSB_t;
   XMIDIUSB_t& XMIDIUSB_;
 
 
 
-  gamepad_midi(gamepad_base& base, XMIDIUSB_t& XMIDIUSB_instance, uint8_t channel=0, uint8_t velocity=100)
+  gamepad_midi(const gamepad_base& base, XMIDIUSB_t& XMIDIUSB_instance, uint8_t channel=0, uint8_t velocity=100)
     : gamepad_base(base), XMIDIUSB_(XMIDIUSB_instance), channel(channel), velocity(velocity)
   {}
 
-  gamepad_midi(gamepad_base& base, uint8_t channel=0, uint8_t velocity=100)
+  gamepad_midi(const gamepad_base& base, uint8_t channel=0, uint8_t velocity=100)
     : gamepad_base(base), XMIDIUSB_(XMIDIUSB), channel(channel), velocity(velocity)
   {}
 
@@ -33,14 +35,8 @@ public:
     
   virtual void read() {
     gamepad_base::read();
-    for(uint8_t i=0; i<get_n_buttons(); ++i)
-      if(button_state_has_changed(i))
-        action_button_changed(i);
-          
     flush_usb();
   }
-
-  virtual void action_button_changed(uint8_t i) = 0;
 
   virtual void note_on(uint8_t c, uint8_t n, uint8_t v) {
     if(c<128 && n<128 && v<128)

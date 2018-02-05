@@ -34,6 +34,7 @@ public:
   }
   virtual void set_button_state(uint8_t index, bool bs) = 0;
 
+  virtual bool any_button_state_has_changed() const = 0;
   virtual bool button_state_has_changed(uint8_t index) const = 0;
 
   virtual String* get_button_names() const = 0;
@@ -62,8 +63,9 @@ protected:
     return parent.get_button_names();
   }
 
-public:
   buttonset& parent;
+
+public:
 
   subset(uint8_t n_buttons, buttonset& aparent, uint8_t id)
   : buttonset(id, n_buttons), parent(aparent)
@@ -80,6 +82,9 @@ public:
   }
   virtual void set_button_state(uint8_t subsetindex, bool bs) {
     parent.set_button_state(get_button_parent_id(subsetindex), bs);
+  }
+  virtual bool any_button_state_has_changed() const {
+    return parent.any_button_state_has_changed();
   }
   virtual bool button_state_has_changed(uint8_t subsetindex) const {
     return parent.button_state_has_changed(get_button_parent_id(subsetindex));
@@ -225,6 +230,10 @@ protected:
   uint8_t n_dpads;
 
   virtual void latch() = 0;
+  virtual void read_imp() = 0;
+
+  virtual void action_before_read() {}
+  virtual void action_after_read() {}
 
 public:
 
@@ -232,12 +241,14 @@ public:
   : buttonset(id,n_buttons), dpads(dpads), n_dpads(n_dpads)
   {}
 
-  virtual void read() = 0;
-  /*{
-  latch();
-  for(uint8_t i = 0; i<n_buttons; ++i)
-  set_button_state(i, read_next_bit() );
-  }*/
+  virtual void read() {
+    action_before_read();
+    noInterrupts();
+    latch();
+    read_imp();
+    interrupts();
+    action_after_read();
+  }
 
   virtual const directional* get_dpad(uint8_t i=0)
   {
@@ -263,13 +274,16 @@ protected:
   uint_type buttons = 0; // each bit is a button, positive logic
   uint_type buttons_last = 0;
 
-  virtual void read_imp() = 0;
+  virtual void action_before_read() {
+    buttons_last = buttons;
+    buttons = 0;
+  }
 
 public:
 
-  bit_gamepad(bit_gamepad& other)
-  : (other.id, other.n_buttons, other.dpads, other.n_dpads)
-  {}
+  //bit_gamepad(bit_gamepad& other)
+  //: bit_gamepad(other.id, other.n_buttons, other.dpads, other.n_dpads)
+  //{}
 
   bit_gamepad(uint8_t id, uint8_t n_buttons, directional* dpads=NULL, uint8_t n_dpads=0)
   : gamepad(id, n_buttons, dpads, n_dpads)
@@ -294,19 +308,12 @@ public:
   virtual uint_type buttons_changed_mask() {
     return buttons_last ^ buttons;
   }
-
+  virtual bool any_button_state_has_changed() const {
+    return buttons_changed_mask();
+  }
   virtual bool button_state_has_changed(uint8_t index) const {
     //return ((buttons_changed_mask()) & _BV(index));
     return buttons_changed_mask() & (1 << index);
-  }
-
-  virtual void read() {
-    buttons_last = buttons;
-    buttons = 0;
-    noInterrupts();
-    latch();
-    read_imp();
-    interrupts();
   }
 
   uint_type get_buttons() { // each bit is a button, positive logic
@@ -318,40 +325,25 @@ public:
 };
 
 
-class SNES_gamepad: public bit_gamepad<uint16_t> {
-  uint8_t latch_pin;
-  uint8_t clock_pin;
-  uint8_t data_pin;
+template<class gamepad_type>
+struct active_gamepad: public gamepad_type {
+  
+  typedef gamepad_type gamepad_t;
 
-protected:
-
-  virtual void latch();
-  virtual void read_imp();
-
-public:
-
-  static const uint8_t N_BUTTONS = 12;
-  static const String names[N_BUTTONS]; // both of these should have in any concrete class of gamepads
-  //      0  1  2       3      4   5     6     7      8  9  10 11
-  enum b {B, Y, select, start, up, down, left, right, A, X, L, R};
-  const directional dpad;
-
-  SNES_gamepad(SNES_gamepad& other)
-  : SNES_gamepad(other.id, other.data_pin, other.clock_pin, other.latch_pin)
+  active_gamepad(const gamepad_t& base) // concrete classes should have deep copy semantics
+  : gamepad_t(base)
   {}
 
-  SNES_gamepad(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
-  : dpad(4,5,6,7, *this), bit_gamepad<uint16_t>(id, 12, &dpad, 1), 
-    latch_pin(latch_pin), clock_pin(clock_pin), data_pin(data_pin)
-  {
-    pinMode(latch_pin, OUTPUT);
-    pinMode(clock_pin, OUTPUT);
-    pinMode(data_pin, INPUT);
+  virtual void action_after_read() { // or even this one, maybe
+    if(any_button_state_has_changed()) // if this question is fast (as with bit_gamepad) = ok this imp.
+      action_any_button_changed();
   }
-
-  virtual String* get_button_names() const {
-    return names;
+  virtual void action_any_button_changed() { // maybe you'd override this
+    for(uint8_t i=0; i<get_n_buttons(); ++i) // if this for is really needed = ok this imp.
+      if(button_state_has_changed(i))
+        action_button_changed(i);
   }
+  virtual void action_button_changed(uint8_t i) {} // you have to override this one or one of the others
 };
 
 
