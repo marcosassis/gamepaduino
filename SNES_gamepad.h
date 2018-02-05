@@ -45,8 +45,10 @@ public:
     return names;
   }
 
+#ifndef _GAMEPAD_SNES_SINGLEPLAYER
   friend struct multiplayerSNES;
-
+#endif
+  
 protected:
   
   virtual void read_bit(uint8_t i) {
