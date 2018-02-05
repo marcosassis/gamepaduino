@@ -6,6 +6,10 @@
 #include "xmidiusb.h"
 
 
+
+
+
+
 template<class gamepad_type, class XMIDIUSB_type=XMIDIUSB_class>
 class gamepad_midi: public active_gamepad<gamepad_type> {
 protected:
@@ -13,6 +17,19 @@ protected:
   uint8_t velocity;
 
 public:
+  
+  // http://www.music-software-development.com/midi-tutorial.html
+  // https://en.wikipedia.org/wiki/List_of_musical_symbols#Dynamics
+  enum dynamics {
+    pppp=8, ppp=20, pp=31, p=42, mp=53, mf=64, f=80, ff=96, fff=112, ffff=127
+  };
+
+  // https://en.wikipedia.org/wiki/Dynamics_(music)
+  // Letters	                ppp	pp	p	  mp	mf	f	  ff	fff
+  // Logic Pro 9 dynamics[2]	16	32	48	64	80	96	112	127
+  // Sibelius 5 dynamics[3]	  20	39	61	71	84	98	113	127
+  // Sibelius 5 attacks	15	  30	50	60	75	90	105	119
+
 
   typedef gamepad_type gamepad_t;
   typedef active_gamepad<gamepad_type> gamepad_base;
@@ -20,12 +37,11 @@ public:
   XMIDIUSB_t& XMIDIUSB_;
 
 
-
-  gamepad_midi(const gamepad_base& base, XMIDIUSB_t& XMIDIUSB_instance, uint8_t channel=0, uint8_t velocity=100)
+  gamepad_midi(const gamepad_base& base, XMIDIUSB_t& XMIDIUSB_instance, uint8_t channel=0, uint8_t velocity=dynamics::mf)
     : gamepad_base(base), XMIDIUSB_(XMIDIUSB_instance), channel(channel), velocity(velocity)
   {}
 
-  gamepad_midi(const gamepad_base& base, uint8_t channel=0, uint8_t velocity=100)
+  gamepad_midi(const gamepad_base& base, uint8_t channel=0, uint8_t velocity=dynamics::mf)
     : gamepad_base(base), XMIDIUSB_(XMIDIUSB), channel(channel), velocity(velocity)
   {}
 

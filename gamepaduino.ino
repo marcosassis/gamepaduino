@@ -12,8 +12,8 @@ const uint8_t DATA_PIN2 = 6;
 
 //SNES_gamepad p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
 //SNES_gamepad p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
-SNES_hid p1hid(3, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
-SNES_hid p2hid(4, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
+SNES_hid p1hid(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
+SNES_hid p2hid(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
 
 //                      0  1  2       3      4   5     6     7      8  9  10 11
 //              enum b {B, Y, select, start, up, down, left, right, A, X, L, R};
@@ -22,6 +22,7 @@ const int8_t blues[] = {3, 10, -128, -128, -128, -128, -128, -128, 5, 7, 0, 6};
 //metapad<SNES_gamepad> p2midi(p2, blues, 69, 1, 64); // 69=A4 ref.: midi specs
 
 //SNES_multiplayer mp(p1midi, p2midi);
+SNES_multiplayer mp(p1hid, p2hid);
 
 
 void setup() {
@@ -33,11 +34,11 @@ void setup() {
 
 void loop() {
   
-  p1hid.read();
-  p2hid.read();
+  //p1hid.read();
+  //p2hid.read();
   //p1midi.read();
   //p2midi.read();
-  //mp.read();
+  mp.read();
 
 /*
   for (uint8_t i = 0; i < p1.get_n_buttons(); ++i) {

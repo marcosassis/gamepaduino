@@ -81,7 +81,8 @@ protected:
   // override SNES_gamepad::read_bit to read all controller buttons at once
   // clock and latch logic only once (first controller = this)
   virtual void read_bit(uint8_t i) {
-    for(uint8_t i=0; i<players.size(); ++i)
+    SNES_gamepad::read_bit(i);
+    for(uint8_t i=1; i<players.size(); ++i)
       players.get(i)->read_bit(i);
   }
 

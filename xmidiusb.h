@@ -3,9 +3,9 @@
 
 #include "MIDIUSB.h"
 
+// https://www.midi.org/specifications/item/table-1-summary-of-midi-message
+struct XMIDIUSB_class: public MIDI_ {
 
-class XMIDIUSB_class: public MIDI_ {
-  public:
     // First parameter is the event type (0x09 = note on, 0x08 = note off).
     // Second parameter is note-on/note-off, combined with the channel.
     // Channel can be anything between 0-15. Typically reported to the user as 1-16.
@@ -21,6 +21,8 @@ class XMIDIUSB_class: public MIDI_ {
       sendMIDI(noteOff);
     }
 
+    // Control Change (Continuous Controller?)
+    // https://www.midi.org/specifications/item/table-3-control-change-messages-data-bytes-2
     void CC(byte channel, byte b1, byte b2) {
       midiEventPacket_t noteOff = {0x0B, 0xB0 | channel, b1, b2};
       sendMIDI(noteOff);
