@@ -13,6 +13,13 @@
 
 int get_id_by_name(String aname, String* names, unsigned max_names);
 
+template<typename Type> void print_bits(Type var) {
+  bool bit;
+  for(int i=(sizeof(Type)*8)-1; i>=0; --i) {
+    bit = var & (Type(1) << i);
+    Serial.print(unsigned(bit));
+  }
+}
 
 ///// BUTTONSET
 class buttonset
@@ -48,6 +55,12 @@ public:
 
   virtual int get_button_id_by_name(String aname) const {
     return get_id_by_name(aname, get_button_names(), n_buttons);
+  }
+
+  virtual void print() {
+    for(uint8_t i=0; i<n_buttons; ++i) {
+      Serial.print(get_button_names()[i]); Serial.print(":\t"); Serial.println(get_button_state(i));
+    }
   }
 
 };//end buttonset
@@ -281,6 +294,8 @@ protected:
 
 public:
 
+  typedef uint_type uint_t;
+
   //bit_gamepad(bit_gamepad& other)
   //: bit_gamepad(other.id, other.n_buttons, other.dpads, other.n_dpads)
   //{}
@@ -291,18 +306,18 @@ public:
 
   virtual bool get_button_state(uint8_t index) const {
     //return bit_is_set(buttons, index);
-    return buttons & (1 << index);
+    return buttons & (uint_t(1) << index);
   }
 
   virtual void set_button_state(uint8_t index, bool bs) {
     if (bs)
       //setb(buttons,index);
       //SETBIT(buttons,index);
-      buttons |= (1 << (index));
+      buttons |= (uint_t(1) << (index));
     else
       //clrb(buttons,index);
       //CLEARBIT(buttons,index);
-      buttons &= ~(1 << (index));
+      buttons &= ~(uint_t(1) << (index));
   }
 
   virtual uint_type buttons_changed_mask() {
@@ -313,7 +328,7 @@ public:
   }
   virtual bool button_state_has_changed(uint8_t index) const {
     //return ((buttons_changed_mask()) & _BV(index));
-    return buttons_changed_mask() & (1 << index);
+    return buttons_changed_mask() & (uint_t(1) << index);
   }
 
   uint_type get_buttons() { // each bit is a button, positive logic
@@ -322,7 +337,12 @@ public:
   uint_type get_buttons_last() {
     return buttons_last;
   }
+  
+  virtual void print() {
+    print_bits(buttons);
+  }
 };
+
 
 
 template<class gamepad_type>
@@ -335,6 +355,8 @@ struct active_gamepad: public gamepad_type {
   {}
 
   virtual void action_after_read() { // or even this one, maybe
+    gamepad_t::action_after_read();
+    //Serial.println(get_id());
     if(any_button_state_has_changed()) // if this question is fast (as with bit_gamepad) = ok this imp.
       action_any_button_changed();
   }
@@ -348,3 +370,5 @@ struct active_gamepad: public gamepad_type {
 
 
 #endif // _GAMEPAD_H
+
+

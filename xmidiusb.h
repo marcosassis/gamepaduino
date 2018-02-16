@@ -13,11 +13,19 @@ struct XMIDIUSB_class: public MIDI_ {
     // Fourth parameter is the velocity (64 = normal, 127 = fastest).
     void note_on(byte channel, byte pitch, byte velocity) {
       midiEventPacket_t noteOn = {0x09, 0x90 | channel, pitch, velocity};
+      //Serial.print("midi packet\t"); Serial.print(0x09, BIN);  Serial.print(" ");
+      //Serial.print(0x90 | channel, BIN);  Serial.print(" ");
+      //Serial.print(pitch, BIN);  Serial.print(" ");
+      //Serial.println(velocity, BIN); 
       sendMIDI(noteOn);
     }
 
     void note_off(byte channel, byte pitch, byte velocity) {
       midiEventPacket_t noteOff = {0x08, 0x80 | channel, pitch, velocity};
+      //Serial.print("midi packet\t"); Serial.print(0x08, BIN);  Serial.print(" ");
+      //Serial.print(0x08 | channel, BIN);  Serial.print(" ");
+      //Serial.print(pitch, BIN);  Serial.print(" ");
+      //Serial.println(velocity, BIN); 
       sendMIDI(noteOff);
     }
 
@@ -49,3 +57,5 @@ struct XMIDIUSB_class: public MIDI_ {
 extern XMIDIUSB_class XMIDIUSB;
 
 #endif // _XMIDIUSB_H
+
+

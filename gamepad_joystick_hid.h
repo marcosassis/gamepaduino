@@ -15,7 +15,6 @@ class gamepad_joystick: public active_gamepad<gamepad_type> {
     joystick_type usb_joystick;
     // this is intended to be public, so the user can directly set keys - still has its 'const getter'
 
-
     //gamepad_joystick(const gamepad_t& base, const joystick_type& usb_joystick)
     //  : gamepad_base(base), usb_joystick(usb_joystick)
     //{
@@ -24,16 +23,17 @@ class gamepad_joystick: public active_gamepad<gamepad_type> {
     
     gamepad_joystick(const gamepad_base& base)
       : gamepad_base(base), usb_joystick(Joystick_(base.get_id()+2, JOYSTICK_TYPE_GAMEPAD, base.get_n_buttons(), 0,
-                                                   false, false, false, false, false, false, false, false, false, false, false))
-                                                 // true, true, false, false, false, false, false, false, false, false, false)))
+                                                 //  false, false, false, false, false, false, false, false, false, false, false))
+                                                  true, true, false, false, false, false, false, false, false, false, false))
     {
       // uint8_t hidReportId - Default: 0x03 - Indicates the joystick's HID report ID.
       // Do not use 0x01 or 0x02 as they are used by the built-in Arduino Keyboard and Mouse libraries.
 
-      //this.usb_joystick.setXAxisRange(-127, 127);
-      //this.usb_joystick.setYAxisRange(-127, 127);
+      //this->usb_joystick.setXAxisRange(-127, 127);
+      //this->usb_joystick.setYAxisRange(-127, 127);
       this->usb_joystick.begin(false); // this autosend is not our policy
     }
+
 
     const joystick_type& get_usb_joystick() const {
       return usb_joystick;
@@ -48,6 +48,7 @@ class gamepad_joystick: public active_gamepad<gamepad_type> {
       if (get_button_state(i)) {
         usb_joystick.pressButton(i);
 #ifdef _GAMEPAD_JOYSTICK_DEBUG
+        Serial.print(get_id()); Serial.print("\t"); 
         Serial.print(i); Serial.print("\t"); 
         Serial.println("usb_joystick.pressButton");
 #endif
@@ -55,6 +56,7 @@ class gamepad_joystick: public active_gamepad<gamepad_type> {
       else {
         usb_joystick.releaseButton(i);
 #ifdef _GAMEPAD_JOYSTICK_DEBUG
+        Serial.print(get_id()); Serial.print("\t"); 
         Serial.print(i); Serial.print("\t"); 
         Serial.println("usb_joystick.releaseButton");
 #endif
@@ -62,15 +64,6 @@ class gamepad_joystick: public active_gamepad<gamepad_type> {
     }
 };
 
-#ifdef _GAMEPAD_DEFINE_SNES_HID
-class SNES_hid: public gamepad_joystick<SNES_gamepad> {
-  public:
-    typedef gamepad_joystick<SNES_gamepad> gamepad_base;
-    
-    SNES_hid(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
-      : gamepad_base(SNES_gamepad(id, data_pin, clock_pin, latch_pin))
-    {}
-};
-#endif
-
 #endif // _GAMEPAD_JOYSTICK_HID_H
+
+

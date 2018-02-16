@@ -51,7 +51,7 @@ public:
     
   virtual void read() {
     gamepad_base::read();
-    flush_usb();
+    //flush_usb();
   }
 
   virtual void note_on(uint8_t c, uint8_t n, uint8_t v) {
@@ -141,3 +141,5 @@ struct note_map: public gamepad_midi<gamepad_type,XMIDIUSB_type> {
 
 
 #endif // _GAMEPAD_MIDI_H
+
+

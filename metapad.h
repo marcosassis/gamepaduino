@@ -66,3 +66,5 @@ struct metapad: public note_map<gamepad_type,XMIDIUSB_type> {
 
 
 #endif // _METAPAD_H
+
+
