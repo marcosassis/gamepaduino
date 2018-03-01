@@ -126,7 +126,10 @@ protected:
   char raw_dump[33]; // 1 received bit per byte // why 33??
 };
 
+
+
 #ifdef _GAMEPAD_DEFINE_N64_HID
+
 class N64_hid: public gamepad_joystick<N64_gamepad> {
   public:
     typedef gamepad_joystick<N64_gamepad> gamepad_base;
@@ -143,13 +146,14 @@ class N64_hid: public gamepad_joystick<N64_gamepad> {
     virtual void action_any_button_changed() {
       this->usb_joystick.setXAxisRange(analog_range.xmin, analog_range.xmax);
       this->usb_joystick.setXAxisRange(analog_range.ymin, analog_range.ymax);
-      this->usb_joystick.setXAxis(get_x());//_cal()*127);
-      this->usb_joystick.setYAxis(get_y());//_cal()*127);
+      this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
+      this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);
       gamepad_base::action_any_button_changed();
     }
 
 };
 #endif // _GAMEPAD_DEFINE_N64_HID
+
 
 #endif // _N64_GAMEPAD_H
 
