@@ -11,11 +11,11 @@ void setup() {}
 
 void loop() {
   p1.read();
-  Serial.print(int(PIND),HEX); Serial.print("\t");
-  p1.print();
-  Serial.print("\t\t");
+  //Serial.print(int(PIND),HEX); Serial.print("\t");
+  //p1.print();
+  //Serial.print("\t\t");
   p2.read();
-  Serial.print(int(PIND),HEX); Serial.print("\t");
-  p2.print();
-  Serial.println();
+  //Serial.print(int(PIND),HEX); Serial.print("\t");
+  //p2.print();
+  //Serial.println();
 }
