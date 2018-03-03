@@ -1,8 +1,6 @@
-// 
-// 
-// 
-
 #include "SNES_gamepad.h"
+
+namespace gamepad {
 
 
 void SNES_gamepad::latch() {
@@ -32,7 +30,7 @@ void SNES_gamepad::read_imp() {
 static const String SNES_gamepad::names[] = {"B", "Y", "select", "start", "up", "down", "left", "right", "A", "X", "L", "R"};
 
 
-
+#ifndef _GAMEPAD_SNES_SINGLEPLAYER
   /* original is
        virtual void read() {
         gamepad_t::read();
@@ -55,9 +53,7 @@ void SNES_multiplayer::read() {
     this->players.get(i)->action_after_read();
   }
 }
+#endif // _GAMEPAD_SNES_SINGLEPLAYER
 
 
-
-
-
-
+}

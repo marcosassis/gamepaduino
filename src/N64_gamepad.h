@@ -1,15 +1,16 @@
 #ifndef _N64_GAMEPAD_H
 #define _N64_GAMEPAD_H
-
-#include "gamepad.h"
-
 // this is based on http://www.instructables.com/id/Turn-an-N64-Controller-into-a-USB-Gamepad-using-an/
 
+#include "bit_gamepad.h"
 
+namespace gamepad {
+
+
+// it means, for now, you can connect N64 data pins (8...?) only on pins of DPORT
 #define DPORT_HIGH(pinnn) ((DDRD &= ~((pinnn))))
 #define DPORT_LOW(pinnn)   ((DDRD |= ((pinnn))))
 #define DPORT_QUERY(pinnn)  ((PIND & ((pinnn))))
-
 
 
 struct N64_gamepad: public bit_gamepad<uint32_t>
@@ -21,6 +22,13 @@ struct N64_gamepad: public bit_gamepad<uint32_t>
   enum b {A,        B,        Z,    start,  Dup,  Ddown,  Dleft,  Dright,
   //      8         9         10    11      12    13      14      15
           reset,   unkown,    L,    R,      Cup,  Cdown,  Cleft,  Cright};
+       // reset is a virtual pin when pressing start+R+L(at same time)
+       //       this will report both R and L pressed(1), but start will report unpressed(0)
+       //          ^ watch out this for your application
+       //            (this is normal N64 console/controller operation)
+       //       AND this will reset controller analog position, as if console has started
+       //          ^ the behavior is that zero position is considered from where the stick
+       //            was when console started or controller reseted (N64 analog is differential)
 
   int8_t get_x() {
     return buttons >> uint_t(16);
@@ -112,7 +120,7 @@ protected:
     // The get_N64_status function sloppily dumps its data 1 bit per byte
     // into the get_status_extended char array. It's our job to go through
     // that and put each piece neatly into the struct N64_status
-    //memset(&buttons, 0, sizeof(buttons));
+    // memset(&buttons, 0, sizeof(buttons));
     for (int ii = 0; ii <= 16; ++ii) {
       set_button_state(ii, raw_dump[ii]);
     }
@@ -126,35 +134,7 @@ protected:
   char raw_dump[33]; // 1 received bit per byte // why 33??
 };
 
-
-
-#ifdef _GAMEPAD_DEFINE_N64_HID
-
-class N64_hid: public gamepad_joystick<N64_gamepad> {
-  public:
-    typedef gamepad_joystick<N64_gamepad> gamepad_base;
-    
-    N64_hid(uint8_t id, uint8_t N64_pin=3, bool init=true)
-      : gamepad_base(N64_gamepad(id, N64_pin, false))
-    {
-      if(init)  AndrewBrownInitialize();
-      
-      this->usb_joystick.setXAxisRange(-127, 127);
-      this->usb_joystick.setYAxisRange(-127, 127);
-    }
-
-    virtual void action_any_button_changed() {
-      this->usb_joystick.setXAxisRange(analog_range.xmin, analog_range.xmax);
-      this->usb_joystick.setXAxisRange(analog_range.ymin, analog_range.ymax);
-      this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
-      this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);
-      gamepad_base::action_any_button_changed();
-    }
-
-};
-#endif // _GAMEPAD_DEFINE_N64_HID
-
-
+}
 #endif // _N64_GAMEPAD_H
 
 

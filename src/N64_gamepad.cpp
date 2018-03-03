@@ -1,5 +1,8 @@
 #include "N64_gamepad.h"
 
+namespace gamepad {
+
+
 #define N64_PIN_REGISTER N64_pin
 
 #define N64_HIGH  DPORT_HIGH((N64_PIN_REGISTER))
@@ -7,13 +10,18 @@
 #define N64_QUERY DPORT_QUERY((N64_PIN_REGISTER))
 
 
-
 static const String N64_gamepad::names[] = {
   // 0           1           2     3         4       5         6         7
     "A",        "B",        "Z",  "start",  "Dup",  "Ddown",  "Dleft",  "Dright",
   // 8           9           10    11        12      13        14        15
     "reset",    "unkown",   "L",  "R",      "Cup",  "Cdown",  "Cleft",  "Cright" };
-
+  // reset is a virtual pin when pressing start+R+L(at same time)
+  //       this will report both R and L pressed(1), but start will report unpressed(0)
+  //          ^ watch out this for your application
+  //            (this is normal N64 console/controller operation)
+  //       AND this will reset controller analog position, as if console has started
+  //          ^ the behavior is that zero position is considered from where the stick
+  //            was when console started or controller reseted (N64 analog is differential)
 
 
 void N64_gamepad::AndrewBrownInitialize()
@@ -28,7 +36,7 @@ void N64_gamepad::AndrewBrownInitialize()
   AndrewBrownSend(&initialize, 1);
   
   // controller response
-  for (byte ii = 0; ii < 64; ii++) {
+  for (uint8_t ii = 0; ii < 64; ii++) {
     // make sure the line is idle for 64 iterations, should be plenty.
     if (!N64_QUERY) ii = 0;
   }
@@ -159,6 +167,4 @@ void N64_gamepad::AndrewBrownGet()
     goto read_loop;
 }
 
-
-
-
+}

@@ -1,12 +1,15 @@
-// SNES_gamepad.h
-
 #ifndef _SNES_GAMEPAD_H
 #define _SNES_GAMEPAD_H
 
-#include "gamepad.h"
-#ifndef _GAMEPAD_SNES_SINGLEPLAYER
-#include "multiplayer.h"
-#endif
+#include "bit_gamepad.h"
+
+namespace gamepad {
+
+
+//#ifndef _GAMEPAD_SNES_SINGLEPLAYER
+//#include "multiplayer.h"
+//#endif
+
 
 class SNES_gamepad: public bit_gamepad<uint16_t> {
 protected:
@@ -60,6 +63,8 @@ protected:
 };
 
 
+
+#define _GAMEPAD_SNES_SINGLEPLAYER
 #ifndef _GAMEPAD_SNES_SINGLEPLAYER
 
 //template<class gamepad_type>
@@ -102,18 +107,7 @@ public:
 #endif // _GAMEPAD_SNES_SINGLEPLAYER
 
 
-#ifdef _GAMEPAD_DEFINE_SNES_HID
-class SNES_hid: public gamepad_joystick<SNES_gamepad> {
-  public:
-    typedef gamepad_joystick<SNES_gamepad> gamepad_base;
-    
-    SNES_hid(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
-      : gamepad_base(SNES_gamepad(id, data_pin, clock_pin, latch_pin))
-    {}
-};
-#endif // _GAMEPAD_DEFINE_SNES_HID
-
-
+}
 #endif // _SNES_GAMEPAD_H
 
 
