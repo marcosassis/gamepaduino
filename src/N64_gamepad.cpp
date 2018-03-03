@@ -2,13 +2,32 @@
 
 namespace gamepad {
 
+#define N64_PIN_DIR DDRD
+#define N64_PIN_PIN PIND
 
-#define N64_PIN_REGISTER N64_pin
+#define N64_PIN_HIGH(pinbit) ((N64_PIN_DIR &= ~((pinbit))))
+#define N64_PIN_LOW(pinbit)   ((N64_PIN_DIR |= ((pinbit))))
+#define N64_PIN_QUERY(pinbit)  ((N64_PIN_PIN & ((pinbit))))
 
-#define N64_HIGH  DPORT_HIGH((N64_PIN_REGISTER))
-#define N64_LOW   DPORT_LOW((N64_PIN_REGISTER))
-#define N64_QUERY DPORT_QUERY((N64_PIN_REGISTER))
+#define N64_PIN_INDEX N64_pin
+#define N64_PIN_BIT   N64_pin_bit
 
+#define N64_HIGH  N64_PIN_HIGH ((N64_PIN_INDEX))
+#define N64_LOW   N64_PIN_LOW  ((N64_PIN_INDEX))
+#define N64_QUERY N64_PIN_QUERY((N64_PIN_INDEX))
+
+
+/*
+#define N64_PIN_DIR DDRD
+#define N64_PIN_PIN PIND
+
+#define N64_PIN_INDEX N64_pin
+#define N64_PIN_BIT   0x08  //N64_pin_bit
+
+#define N64_HIGH  ((N64_PIN_DIR &= ~ N64_PIN_BIT))
+#define N64_LOW   ((N64_PIN_DIR |=   N64_PIN_BIT))
+#define N64_QUERY ((N64_PIN_PIN  &   N64_PIN_BIT))
+*/
 
 static const String N64_gamepad::names[] = {
   // 0           1           2     3         4       5         6         7

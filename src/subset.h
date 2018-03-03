@@ -41,16 +41,15 @@ public:
     return parent.button_state_has_changed(get_button_parent_id(subsetindex));
   }
   virtual int get_button_id_by_name(String aname) const {
-    int return_i = parent.get_button_id_by_name(aname);
-    if(return_i>=0) {
-      for(uint8_t i=0; i<get_n_buttons(); ++i) {
-        if(get_button_parent_id(i)==return_i) {
-          return_i = i;
-          break;
-        }
-      }
-    }
-    return return_i;
+    int ret = parent.get_button_id_by_name(aname);
+    if(ret<0)
+      return ret;
+    
+    for(uint8_t i=0; i<get_n_buttons(); ++i)
+      if(get_button_parent_id(i)==ret)
+        return i;
+        
+    return -1;
   }
   virtual uint8_t get_button_parent_id(uint8_t subsetindex) const = 0;
 

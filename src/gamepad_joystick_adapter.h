@@ -4,34 +4,28 @@
 // adapter class for this cool USB HID joystick library:
 // https://github.com/MHeironimus/ArduinoJoystickLibrary
 
-// #include "Joystick.h" // include ArduinoJoystickLibrary BEFORE include this file
-
-
 #include "active_gamepad.h"
+#include "Joystick.h"
 
 namespace gamepad {
 
 
 /*
-
-	Joystick_(
-		uint8_t hidReportId = JOYSTICK_DEFAULT_REPORT_ID,
-		uint8_t joystickType = JOYSTICK_TYPE_JOYSTICK,
-        uint8_t buttonCount = JOYSTICK_DEFAULT_BUTTON_COUNT,
-		uint8_t hatSwitchCount = JOYSTICK_DEFAULT_HATSWITCH_COUNT,
-		bool includeXAxis = true,
-		bool includeYAxis = true,
-		bool includeZAxis = true,
-		bool includeRxAxis = true,
-		bool includeRyAxis = true,
-		bool includeRzAxis = true,
-		bool includeRudder = true,
-		bool includeThrottle = true,
-		bool includeAccelerator = true,
-		bool includeBrake = true,
-		bool includeSteering = true);
-
-
+Joystick_(uint8_t hidReportId = JOYSTICK_DEFAULT_REPORT_ID,
+          uint8_t joystickType = JOYSTICK_TYPE_JOYSTICK,
+          uint8_t buttonCount = JOYSTICK_DEFAULT_BUTTON_COUNT,
+          uint8_t hatSwitchCount = JOYSTICK_DEFAULT_HATSWITCH_COUNT,
+          bool includeXAxis = true,
+          bool includeYAxis = true,
+          bool includeZAxis = true,
+          bool includeRxAxis = true,
+          bool includeRyAxis = true,
+          bool includeRzAxis = true,
+          bool includeRudder = true,
+          bool includeThrottle = true,
+          bool includeAccelerator = true,
+          bool includeBrake = true,
+          bool includeSteering = true);
 */
 
 
@@ -140,7 +134,7 @@ struct SNES_hid: public gamepad_joystick<SNES_gamepad> {
     joystick_type usb_joystick;
     
     SNES_hid(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
-      : usb_joystick(joystick_type(id+2, JOYSTICK_TYPE_JOYSTICK, N_BUTTONS, 0,
+      : usb_joystick(joystick_type(id+2, JOYSTICK_TYPE_GAMEPAD, N_BUTTONS, 0,
                                    false, false, false, false, false, false, false, false, false, false, false)),
         gamepad_base(SNES_gamepad(id, data_pin, clock_pin, latch_pin), usb_joystick)
     {}

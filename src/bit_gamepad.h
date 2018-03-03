@@ -23,9 +23,9 @@ public:
 
   typedef uint_type uint_t;
 
-  //bit_gamepad(bit_gamepad& other)
-  //: bit_gamepad(other.id, other.n_buttons, other.dpads, other.n_dpads)
-  //{}
+  bit_gamepad(bit_gamepad& other)
+  : bit_gamepad(other.id, other.n_buttons, other.dpads, other.n_dpads)
+  {}
 
   bit_gamepad(uint8_t id, uint8_t n_buttons, directional* dpads=NULL, uint8_t n_dpads=0)
   : gamepad(id, n_buttons, dpads, n_dpads)

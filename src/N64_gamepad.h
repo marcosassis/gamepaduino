@@ -7,12 +7,6 @@
 namespace gamepad {
 
 
-// it means, for now, you can connect N64 data pins (8...?) only on pins of DPORT
-#define DPORT_HIGH(pinnn) ((DDRD &= ~((pinnn))))
-#define DPORT_LOW(pinnn)   ((DDRD |= ((pinnn))))
-#define DPORT_QUERY(pinnn)  ((PIND & ((pinnn))))
-
-
 struct N64_gamepad: public bit_gamepad<uint32_t>
 {
   typedef bit_gamepad<uint32_t> gamepad_base;
@@ -44,6 +38,8 @@ protected:
 
   directional dpads[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
   uint8_t N64_pin;
+  uint8_t N64_pin_bit;
+  char raw_dump[33]; // 1 received bit per byte // why 33??
   
 public:
 
@@ -52,7 +48,7 @@ public:
   {}
 
   N64_gamepad(uint8_t id, uint8_t N64_pin=3, bool init=true)
-  : gamepad_base(id, N_BUTTONS, dpads, n_dpads), N64_pin(N64_pin)
+  : gamepad_base(id, N_BUTTONS, dpads, n_dpads), N64_pin(N64_pin), N64_pin_bit(0x01 << (N64_pin))
   {
     if(init)
       AndrewBrownInitialize();
@@ -124,14 +120,13 @@ protected:
     for (int ii = 0; ii <= 16; ++ii) {
       set_button_state(ii, raw_dump[ii]);
     }
-    for (int ii = 0; ii <= 8; ++ii) {
+    for (int ii = 0; ii <= 8; ++ii) { // invert byte order for analog values (bit endianness stuff)
       set_button_state(ii+16, raw_dump[23-ii]);
     }
     for (int ii = 0; ii <= 8; ++ii) {
       set_button_state(ii+24, raw_dump[31-ii]);
     }
   }
-  char raw_dump[33]; // 1 received bit per byte // why 33??
 };
 
 }

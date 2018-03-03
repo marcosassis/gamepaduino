@@ -1,5 +1,4 @@
 #include "SNES_gamepad.h"
-#include "Joystick.h" 
 #define _GAMEPAD_DEFINE_SNES_HID
 #include "gamepad_joystick_adapter.h"
 using gamepad::SNES_hid;
