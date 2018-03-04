@@ -35,10 +35,18 @@ struct multiplayer: public gamepad_type
 
   // PLEASE derive from this class and override this method for each multiplayer specific protocol (see SNES_multiplayer)
   virtual void read() {
+    naive_read_all();
+  }
+  
+  void naive_read_all() {
     gamepad_t::read();
     for(uint8_t i = 1; i<players.size(); ++i)
       players.get(i)->read();
   }
+  
+  void latch_all_read_all (
+    
+  )
 };
 
 #endif

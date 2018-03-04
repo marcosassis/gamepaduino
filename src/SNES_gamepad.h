@@ -85,6 +85,10 @@ struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
   SNES_multiplayer(const gamepad_t& p1, const gamepad_t& p2, const gamepad_t& p3, const gamepad_t& p4)
   : multiplayer_base(p1,p2,p3,p4) {
   }
+  SNES_multiplayer(const gamepad_t& p1, const gamepad_t& p2, const gamepad_t& p3, const gamepad_t& p4, const gamepad_t& p5)
+  : multiplayer_base(p1,p2,p3,p4) {
+    players.add(&p5); // é nois joga bomberman fi 
+  }
 
 protected:
 

@@ -3,9 +3,59 @@
 // this is based on http://www.instructables.com/id/Turn-an-N64-Controller-into-a-USB-Gamepad-using-an/
 
 #include "bit_gamepad.h"
+//#include "pins_arduino.h"
 
 namespace gamepad {
 
+// available pins 
+
+// pro micro [ATmega32U4]
+// 
+// 2,3,4,6
+// 
+// Arduino Pin Mapping - PD 
+// https://www.arduino.cc/en/Hacking/PinMapping32u4
+// (OC0B/SCL/INT0)    PD0   Digital pin 3 (SCL)(PWM)
+// (SDA/INT1)         PD1   Digital pin 2 (SDA)
+// (RX D1/AIN1/INT2)  PD2   Digital pin 0 (RX) // nop
+// (TXD1/INT3)        PD3   Digital pin 1 (TX) // no 
+//   (please don't use TX/RX on pro micro, I think you'd have to
+//   flash with an external programmer if this messes up)
+// (ICP1/ADC8)        PD4   Digital pin 4
+// (XCK1/#CTS)        PD5   TXLED
+// (T1/#OC4D/ADC9)    PD6   Digital pin 12 // ??? unavailable on board
+// (T0/OC4D/ADC10)    PD7   Digital Pin 6 (PWM)
+
+// pins_arduino.h [pro micro]
+/*
+const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
+	_BV(2), // D0 - PD2
+	_BV(3),	// D1 - PD3
+	_BV(1), // D2 - PD1
+	_BV(0),	// D3 - PD0
+	_BV(4),	// D4 - PD4
+	_BV(6), // D5 - PC6
+	_BV(7), // D6 - PD7
+  ...
+	_BV(6), // D12 - PD6 // ??? unavailable on board
+  ...
+*/
+
+// arduino 
+// 
+// 1,2,3,4,5,6,7
+// (in general arduino boards, digital pins 1..7 correspond to PD bits 1..7)
+// 
+// ATmega168/328P-Arduino Pin Mapping - PD 
+// https://www.arduino.cc/en/Hacking/PinMapping168
+//                    PD0   Digital pin 0
+//                    PD1   Digital pin 1
+//                    PD2   Digital pin 2
+//                    PD3   Digital pin 3
+//                    PD4   Digital pin 4
+//                    PD5   Digital pin 5
+//                    PD6   Digital pin 6
+//                    PD7   Digital pin 7
 
 struct N64_gamepad: public bit_gamepad<uint32_t>
 {
@@ -37,19 +87,20 @@ struct N64_gamepad: public bit_gamepad<uint32_t>
 protected:
 
   directional dpads[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
-  uint8_t N64_pin;
-  uint8_t N64_pin_bit;
   char raw_dump[33]; // 1 received bit per byte // why 33??
   
 public:
+  uint8_t N64_pin_bit;
+  uint8_t N64_pin;
 
   N64_gamepad(const N64_gamepad& other)
   : N64_gamepad(other.id,other.N64_pin,false)
   {}
 
   N64_gamepad(uint8_t id, uint8_t N64_pin=3, bool init=true)
-  : gamepad_base(id, N_BUTTONS, dpads, n_dpads), N64_pin(N64_pin), N64_pin_bit(0x01 << (N64_pin))
+  : gamepad_base(id, N_BUTTONS, dpads, n_dpads), N64_pin(N64_pin), N64_pin_bit(B10000)//, N64_pin_bit(uint8_t(digital_pin_to_bit_mask_PGM[N64_pin]))
   {
+    N64_pin_bit = digitalPinToBitMask(N64_pin);//uint8_t(digital_pin_to_bit_mask_PGM[2]);
     if(init)
       AndrewBrownInitialize();
   }
