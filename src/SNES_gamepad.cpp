@@ -1,25 +1,28 @@
 #include "SNES_gamepad.h"
+#include "stopwatch.h"
 
 namespace gamepad {
 
 
 void SNES_gamepad::latch() {
+  stopwatch t(12000);
   digitalWrite(latch_pin, HIGH);//latch pulse, lock the state of the buttons in the register
-  delayMicroseconds(12);
+  t.wait();
   digitalWrite(latch_pin, LOW);
-  delayMicroseconds(6);
 }
 
 void SNES_gamepad::read_imp() {
 
+  stopwatch t(6000);
+  while(t.stop_if_elapsed()) {}  
   read_bit(0); //first bit read before clock.
 
-  for (int i = 1; i < 16; i++) {//clock &read
+  for (int i = 1; i < 16; i++) { // clock & read
     digitalWrite(clock_pin, HIGH);
-    delayMicroseconds(6);
+    t.start(6000); t.wait();
     read_bit(i); //the values are stored for each bit
     digitalWrite(clock_pin, LOW);
-    delayMicroseconds(6);
+    t.start(); t.wait(6000); // different ways here just for demo purposes
   }
 
   buttons = ~buttons; // a button pressed is read as a '0'(pull ups), gamepad uses positive logic
@@ -33,36 +36,37 @@ static const String SNES_gamepad::names[] = {"B", "Y", "select", "start", "up", 
 // clock and latch logic only once (first controller)
 void SNES_multiplayer::read() {
   
-  for(uint8_t i = 0; i<players.size(); ++i)
-    this->players.get(i)->action_before_read();
+  for(uint8_t p = 0; p<players.size(); ++p)
+    this->players.get(p)->action_before_read();
   
   noInterrupts(); // latch and read all on the same batch
   
-  this->players.get(0)->latch(); // only first(this) will really latch all controllers)
+  this->players.get(0)->latch(); // only first will really latch all controllers
   
-  for(uint8_t i = 0; i<players.size(); ++i) {
-    this->players.get(i)->read_bit(0); //first bit read before clock.
+  stopwatch t;
+  t.wait(6000);
+  for(uint8_t p = 0; p<players.size(); ++p) {
+    this->players.get(p)->read_bit(0); //first bit read before clock.
   }
-  for (int i = 1; i < 16; i++) {//clock &read
-    for(uint8_t i = 0; i<players.size(); ++i) {
-      digitalWrite(this->players.get(i)->clock_pin, HIGH);
+  for (int i = 1; i < 16; i++) { // clock & read
+    digitalWrite(this->players.get(0)->clock_pin, HIGH);
+    t.start();
+    t.wait(6000);
+    for(uint8_t p = 0; p<players.size(); ++p) {
+      this->players.get(p)->read_bit(i);
     }
-    delayMicroseconds(6); // will not work with delay.
-    for(uint8_t i = 0; i<players.size(); ++i) {
-      this->players.get(i)->read_bit(i);
-    }
-    for(uint8_t i = 0; i<players.size(); ++i) {
-      digitalWrite(this->players.get(i)->clock_pin, LOW);
-    }
+    digitalWrite(this->players.get(0)->clock_pin, LOW);
+    t.start();
+    t.wait(6000);
   }
-  for(uint8_t i = 0; i<players.size(); ++i) {
-    this->players.get(i)->buttons = ~(this->players.get(i)->buttons);
-  }// ok(ufa) of course i'm gonna generalize this
+  for(uint8_t p = 0; p<players.size(); ++p) {
+    this->players.get(p)->buttons = ~(this->players.get(p)->buttons);
+  } // ok(ufa) of course i'm gonna generalize this
 
   interrupts();
   
-  for(uint8_t i = 0; i<players.size(); ++i)
-    this->players.get(i)->action_after_read();
+  for(uint8_t p = 0; p<players.size(); ++p)
+    this->players.get(p)->action_after_read();
 }
 /* gamepad::read is:
 virtual void read() {

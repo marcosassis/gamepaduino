@@ -10,7 +10,7 @@ const uint8_t DATA_PIN2 = 6;
 SNES_hid p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
 SNES_hid p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
 
-gamepad::multiplayer<SNES_hid> multi(p1,p2); // naïve implementation (working)
+SNES_multiplayer multi(p1,p2);
 
 void setup() {}
 
