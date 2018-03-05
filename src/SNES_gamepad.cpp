@@ -14,7 +14,7 @@ void SNES_gamepad::latch() {
 void SNES_gamepad::read_imp() {
 
   stopwatch t(6000);
-  while(t.stop_if_elapsed()) {}  
+  while(t.stop_if_elapsed()) {}  // wait
   read_bit(0); //first bit read before clock.
 
   for (int i = 1; i < 16; i++) { // clock & read

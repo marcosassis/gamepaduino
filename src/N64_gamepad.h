@@ -91,11 +91,10 @@ protected:
 
   directional dpads[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
   char raw_dump[33]; // 1 received bit per byte // why 33??
-  
-public:
   uint8_t N64_pin_bit;
   uint8_t N64_pin;
-
+  
+public:
 
   N64_gamepad(const N64_gamepad& other)
   : N64_gamepad(other.id,other.N64_pin,false)
@@ -183,6 +182,19 @@ protected:
     }
   }
 };
+
+// if you want to TURN OFF this optimization class for SNES controllers protocol,
+// just define _GAMEPAD_SNES_SINGLEPLAYER before include this file (if you don't, never mind)
+#ifndef _GAMEPAD_N64_SINGLEPLAYER
+#define _GAMEPAD_N64_MULTIPLAYER
+}//end namespace gamepad
+#include "multiplayer.h"
+namespace gamepad {
+
+
+
+#endif // _GAMEPAD_N64_SINGLEPLAYER
+
 
 }
 #endif // _N64_GAMEPAD_H

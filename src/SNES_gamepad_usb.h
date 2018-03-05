@@ -3,6 +3,9 @@
 #include "gamepad_joystick_adapter.h"
  // comment these out if you're like me (respect scopes, don't pollute)
 using gamepad::SNES_hid;
-//using gamepad::multiplayer<SNES_hid>;
+
+#ifdef _GAMEPAD_SNES_MULTIPLAYER
 using gamepad::SNES_multiplayer;
+#endif
+
 // ok, now thats very easy
