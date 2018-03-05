@@ -1,5 +1,4 @@
 #include "SNES_gamepad_usb.h"
-#include "multiplayer.h"
 
 const uint8_t CLOCK_PIN = 9;
 const uint8_t LATCH_PIN = 8;
@@ -11,7 +10,7 @@ const uint8_t DATA_PIN2 = 6;
 SNES_hid p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
 SNES_hid p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
 
-gamepad::multiplayer<SNES_hid> multi(p1,p2);
+gamepad::multiplayer<SNES_hid> multi(p1,p2); // naïve implementation (working)
 
 void setup() {}
 

@@ -11,7 +11,6 @@ void SNES_gamepad::latch() {
 }
 
 void SNES_gamepad::read_imp() {
-  //Serial.println(id);
 
   read_bit(0); //first bit read before clock.
 
@@ -31,28 +30,50 @@ static const String SNES_gamepad::names[] = {"B", "Y", "select", "start", "up", 
 
 
 #ifndef _GAMEPAD_SNES_SINGLEPLAYER
-  /* original is
-       virtual void read() {
-        gamepad_t::read();
-        for(uint8_t i = 1; i<players.size(); ++i)
-          players.get(i)->read();
-      }
-  */
-//template<class gamepad_type>
+// clock and latch logic only once (first controller)
 void SNES_multiplayer::read() {
-  for(uint8_t i = 0; i<players.size(); ++i) {
-    Serial.print("_be_"); Serial.println(players.get(i)->get_id());
+  
+  for(uint8_t i = 0; i<players.size(); ++i)
     this->players.get(i)->action_before_read();
+  
+  noInterrupts(); // latch and read all on the same batch
+  
+  this->players.get(0)->latch(); // only first(this) will really latch all controllers)
+  
+  for(uint8_t i = 0; i<players.size(); ++i) {
+    this->players.get(i)->read_bit(0); //first bit read before clock.
   }
+  for (int i = 1; i < 16; i++) {//clock &read
+    for(uint8_t i = 0; i<players.size(); ++i) {
+      digitalWrite(this->players.get(i)->clock_pin, HIGH);
+    }
+    delayMicroseconds(6); // will not work with delay.
+    for(uint8_t i = 0; i<players.size(); ++i) {
+      this->players.get(i)->read_bit(i);
+    }
+    for(uint8_t i = 0; i<players.size(); ++i) {
+      digitalWrite(this->players.get(i)->clock_pin, LOW);
+    }
+  }
+  for(uint8_t i = 0; i<players.size(); ++i) {
+    this->players.get(i)->buttons = ~(this->players.get(i)->buttons);
+  }// ok(ufa) of course i'm gonna generalize this
+
+  interrupts();
+  
+  for(uint8_t i = 0; i<players.size(); ++i)
+    this->players.get(i)->action_after_read();
+}
+/* gamepad::read is:
+virtual void read() {
+  action_before_read();
   noInterrupts();
   latch();
-  read_imp();  // only first(this) will really latch and read all controllers, see read_bit override here)
+  read_imp();
   interrupts();
-  for(uint8_t i = 0; i<players.size(); ++i) {
-    Serial.print("_af_"); Serial.println(players.get(i)->get_id());
-    this->players.get(i)->action_after_read();
-  }
+  action_after_read();
 }
+*/
 #endif // _GAMEPAD_SNES_SINGLEPLAYER
 
 

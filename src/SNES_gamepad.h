@@ -6,11 +6,6 @@
 namespace gamepad {
 
 
-//#ifndef _GAMEPAD_SNES_SINGLEPLAYER
-//#include "multiplayer.h"
-//#endif
-
-
 class SNES_gamepad: public bit_gamepad<uint16_t> {
 protected:
 
@@ -50,22 +45,25 @@ public:
   }
 
 #ifndef _GAMEPAD_SNES_SINGLEPLAYER
-  //template<class gamepad_type>
   friend struct SNES_multiplayer;
 #endif
   
 protected:
   
   virtual void read_bit(uint8_t i) {
-    //Serial.print(id); Serial.print("\t"); Serial.println(i);
     buttons |= (digitalRead(data_pin) << i);
   }
 };
 
 
-
-#define _GAMEPAD_SNES_SINGLEPLAYER
+// if you want to TURN OFF this optimization class for SNES controllers protocol,
+// just define _GAMEPAD_SNES_SINGLEPLAYER before include this file (if you don't, never mind)
 #ifndef _GAMEPAD_SNES_SINGLEPLAYER
+#define _GAMEPAD_SNES_MULTIPLAYER
+}//end namespace gamepad
+#include "multiplayer.h"
+namespace gamepad {
+
 
 //template<class gamepad_type>
 struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
@@ -90,28 +88,14 @@ struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
     players.add(&p5); // é nois joga bomberman fi 
   }
 
-protected:
-
-  // override SNES_gamepad::read_bit to read all controller buttons at once
-  // clock and latch logic only once (first controller = this)
-  virtual void read_bit(uint8_t i) {
-    //Serial.print(players.size()); Serial.print("\t"); Serial.println(i);
-    SNES_gamepad::read_bit(i);
-    for(uint8_t p=1; p<players.size(); ++p)
-      players.get(p)->read_bit(i);
-  }
-
-
-public:
-
+  // clock and latch logic only once (first controller)
   virtual void read();
-
 };
 
 #endif // _GAMEPAD_SNES_SINGLEPLAYER
 
+}//end namespace gamepad
 
-}
 #endif // _SNES_GAMEPAD_H
 
 
