@@ -1,5 +1,8 @@
 #ifndef _N64_GAMEPAD_H
 #define _N64_GAMEPAD_H
+
+// doc https://github.com/marcosassis/gamepaduino/wiki/N64
+
 // this is based on http://www.instructables.com/id/Turn-an-N64-Controller-into-a-USB-Gamepad-using-an/
 
 #include "bit_gamepad.h"
@@ -43,8 +46,8 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 
 // arduino 
 // 
-// 1,2,3,4,5,6,7
-// (in general arduino boards, digital pins 1..7 correspond to PD bits 1..7)
+// 0,1,2,3,4,5,6,7
+// (in general arduino boards, digital pins 0..7 correspond to PD bits 0..7)
 // 
 // ATmega168/328P-Arduino Pin Mapping - PD 
 // https://www.arduino.cc/en/Hacking/PinMapping168
@@ -92,6 +95,7 @@ protected:
 public:
   uint8_t N64_pin_bit;
   uint8_t N64_pin;
+
 
   N64_gamepad(const N64_gamepad& other)
   : N64_gamepad(other.id,other.N64_pin,false)

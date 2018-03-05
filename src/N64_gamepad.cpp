@@ -25,7 +25,7 @@ static const String N64_gamepad::names[] = {
   // reset is a virtual pin when pressing start+R+L(at same time)
   //       this will report both R and L pressed(1), but start will report unpressed(0)
   //          ^ watch out this for your application
-  //            (this is normal N64 console/controller operation)
+  //            (this is normal N64 operation)
   //       AND this will reset controller analog position, as if console has started
   //          ^ the behavior is that zero position is considered from where the stick
   //            was when console started or controller reseted (N64 analog is differential)

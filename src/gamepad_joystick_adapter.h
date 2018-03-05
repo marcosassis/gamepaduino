@@ -95,20 +95,25 @@ struct gamepad_joystick: public active_gamepad<gamepad_type> {
 
 
 
-// you can include "N64_gamepad.h" and define this macro BEFORE include this file
-// for out-of-the box Nintendo 64 controller adapter functionality (working great on Projetc 64)
+// out-of-the box Nintendo 64 controller adapter functionality (working great on Projetc 64)
 #ifdef _GAMEPAD_DEFINE_N64_HID
 
 struct N64_hid: public gamepad_joystick<N64_gamepad> {
     typedef gamepad_joystick<N64_gamepad> gamepad_base;
     joystick_type usb_joystick;
+
+    /*
+    N64_hid(const N64_hid& other)
+    : N64_hid(other.id, other.N64_pin, false)
+    {}
+    */
     
     N64_hid(uint8_t id, uint8_t N64_pin=3, bool init=true)
       : usb_joystick(joystick_type(id+2, JOYSTICK_TYPE_JOYSTICK, N_BUTTONS, 0,
                                    true, true, false, false, false, false, false, false, false, false, false)),
-        gamepad_base(N64_gamepad(id, N64_pin, false), usb_joystick)
+        gamepad_base(N64_gamepad(id, N64_pin, true), usb_joystick)
     {
-      if(init)  AndrewBrownInitialize();
+      //if(init)  AndrewBrownInitialize();
       
       this->usb_joystick.setXAxisRange(-127, 127);
       this->usb_joystick.setYAxisRange(-127, 127);
@@ -127,6 +132,7 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
 
 
 
+// out-of-the box Super Nintendo controller adapter functionality (working great on ZSNES)
 #ifdef _GAMEPAD_DEFINE_SNES_HID
 
 struct SNES_hid: public gamepad_joystick<SNES_gamepad> {
