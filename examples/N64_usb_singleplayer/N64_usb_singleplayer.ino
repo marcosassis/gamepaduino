@@ -1,5 +1,4 @@
-#define _GAMEPAD_N64_SINGLEPLAYER // optional define, singleplayer will work anyway
-#include "N64_gamepad_usb.h"
+#include "N64_gamepad_usb_single.h"
 
 const uint8_t N64_PIN = 3;
 

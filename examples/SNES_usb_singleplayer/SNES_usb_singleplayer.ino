@@ -1,5 +1,4 @@
-#define _GAMEPAD_SNES_SINGLEPLAYER // optional define, singleplayer will work anyway
-#include "SNES_gamepad_usb.h"
+#include "SNES_gamepad_usb_single.h"
 
 const uint8_t CLOCK_PIN = 9;
 const uint8_t LATCH_PIN = 8;
