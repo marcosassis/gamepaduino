@@ -90,6 +90,10 @@ struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
 
   // clock and latch logic only once (first controller)
   virtual void read();
+  virtual void latch_all();
+  virtual void read_all();
+  virtual void read_bit_all(uint8_t i);
+  virtual void clock_read_bit_all(uint8_t i);
 };
 
 #endif // _GAMEPAD_SNES_SINGLEPLAYER

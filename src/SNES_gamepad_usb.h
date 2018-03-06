@@ -6,6 +6,7 @@ using gamepad::SNES_hid;
 
 #ifdef _GAMEPAD_SNES_MULTIPLAYER
 using gamepad::SNES_multiplayer;
+//typedef gamepad::multiplayer<SNES_hid> SNES_multiplayer;
 #endif
 
 // ok, now thats very easy
