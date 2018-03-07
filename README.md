@@ -1,4 +1,4 @@
-# gamepad
+# `gamepad`
 
 \[library for arduino compatible boards\]
 
