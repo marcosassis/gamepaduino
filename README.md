@@ -4,7 +4,10 @@
 
 `[aka gamepaduino]`
 
-`interfaces for retro/oldschool gamepads [game controllers, aka joysticks/joypads/manetes/etc]`
+```
+interfaces for retro/oldschool gamepads
+[game controllers, aka joysticks/joypads/manetes/etc]
+```
 
 ## `by`
 
