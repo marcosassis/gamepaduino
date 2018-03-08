@@ -76,6 +76,8 @@ examples!
 
 [`telegram group`](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg) `[pt-br + en]`
 
+`notes`
+
 > 
 > _all creative non-code work here is [licensed](https://creativecommons.org/licenses/by-sa/2.0/) by (cc-by-sa) marcos assis_
 
