@@ -20,42 +20,42 @@ metamero.tumblr.com
 
 `now available on gamepad library`
 
-`  physical controllers interfaces/protocols`
 ```
+physical controllers interfaces/protocols
     [read gamepads/controllers from your arduino-compatible board]
-      SNES controller interface
-      N64 controller interface
+        SNES controller interface
+        N64 controller interface
 ```
 ```
-  multiplayer
+multiplayer
     [read multiple controllers on the fly]
     [with cool specialization/optimization for SNES multiplayer protocol]
-      optional, turn on by default, easy to turn off
-      this module depends on: 'linked list library'
+        optional, turn on by default, easy to turn off
+        this module depends on: 'linked list library'
 ```
 ```
-  'arduino joystick library' adaptor
+'arduino joystick library' adaptor
     [go USB HID! make your device appears as joystick/gamepad(s) on your OS(any)]
-      for 'pro micro' board[tested], or any ATmega32U4 board, as 'arduino leonardo'
-      this optional, just include if you want, and your board is supported by this library
-      this module depends on: 'arduino joystick library'
+        for 'pro micro' board[tested], or any ATmega32U4 board, as 'arduino leonardo'
+        this optional, just include if you want, and your board is supported by this library
+        this module depends on: 'arduino joystick library'
 ```
 ```
-  [advanced]
+[advanced]
     structured interfaces / classes hierarchy
-      [template class library]
-        robust and meaningful generic interfaces and implementations
-        cool specializations / concrete implementations of controllers out-of-the-box
-        flexible options (structured parametrization)
-        but with meaningful names, and helpful aliases and includes for beginners
-          the idea is for this library to be *consistently expanded*, and at the same time,
-          *be transparent for beginners*, about this OO/GP internals
+        [template class library]
+            robust and meaningful generic interfaces and implementations
+            cool specializations / concrete implementations of controllers out-of-the-box
+            flexible options (structured parametrization)
+            but with meaningful names, and helpful aliases and includes for beginners
+                the idea is for this library to be **consistently expanded**, and at the same time,
+                **be transparent for beginners**, about this OO/GP internals
 ```
 ```
-  and most important:
+and most important:
     examples! [with minimal number of commands ever]
-      ultra-easy and intuitive *minimalist* interfaces and program flow
-      and growing documentation
+        ultra-easy and intuitive *minimalist* interfaces and program flow
+        and growing documentation
 ```
 
 ## `docs`
