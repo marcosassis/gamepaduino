@@ -68,12 +68,6 @@ examples!
         and growing documentation
 ```
 
-
-> _this library is in early stage of development_
-> 
-> _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_
-
-
 ## `docs`
 
 [`wiki`](https://github.com/marcosassis/gamepaduino/wiki)
@@ -81,3 +75,8 @@ examples!
 ## `contact`
 
 [`telegram group`](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg) `[pt-br + en]`
+
+
+> _this library is in early stage of development_
+> 
+> _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_
