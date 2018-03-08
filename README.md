@@ -1,6 +1,6 @@
  # `gamepad`
 
-`[library for arduino compatible boards]`
+`[library for arduino-compatible boards]`
 
 `[aka gamepaduino]`
 
@@ -14,6 +14,19 @@ interfaces for retro/oldschool gamepads
 ```
 marcos assis
 metamero.tumblr.com
+```
+
+## `now`
+
+```
+physical controllers interfaces
+
+  read an original gamepad/controller from your arduino-compatible board
+  
+  now available on gamepad library
+    
+    SNES controller interface
+    N64 controller interface
 ```
 
 ## `docs`
