@@ -20,8 +20,8 @@ metamero.tumblr.com
 
 `now available on gamepad library`
 
+`  physical controllers interfaces/protocols`
 ```
-  physical controllers interfaces/protocols
     [read gamepads/controllers from your arduino-compatible board]
       SNES controller interface
       N64 controller interface
