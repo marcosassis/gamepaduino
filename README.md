@@ -24,8 +24,8 @@ metamero.tumblr.com
 
 ```
 [read gamepads/controllers from your arduino-compatible board]
-    SNES controller interface
-    N64 controller interface
+    SNES controller interface [multiplayer]
+    N64 controller interface [multiplayer]
 ```
 
 ##### `multiplayer`
