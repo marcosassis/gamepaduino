@@ -21,18 +21,21 @@ metamero.tumblr.com
 `available on gamepad library`
 
 ##### `physical controllers interfaces/protocols`
-```
-[read gamepads/controllers from your arduino-compatible board]
 
+`[read gamepads/controllers from your arduino-compatible board]`
+
+```
     SNES controller interface
     N64 controller interface
 ```
-#### `multiplayer`
+
+##### `multiplayer`
+
+`[read multiple controllers on the fly]`
 ```
-    [read multiple controllers on the fly]
-    [with cool specialization/optimization for SNES multiplayer protocol]
-        optional, turn on by default, easy to turn off
-        this module depends on: 'linked list library'
+  [with cool specialization/optimization for SNES multiplayer protocol]
+    optional, turn on by default, easy to turn off
+    this module depends on: 'linked list library'
 ```
 ```
 'arduino joystick library' adaptor
