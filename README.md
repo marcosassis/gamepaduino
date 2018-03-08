@@ -22,9 +22,9 @@ metamero.tumblr.com
 
 #### `physical controllers interfaces/protocols`
 ```
-    [read gamepads/controllers from your arduino-compatible board]
-        SNES controller interface
-        N64 controller interface
+[read gamepads/controllers from your arduino-compatible board]
+    SNES controller interface
+    N64 controller interface
 ```
 ```
 multiplayer
