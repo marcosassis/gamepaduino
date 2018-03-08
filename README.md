@@ -77,8 +77,9 @@ examples!
 [`telegram group`](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg) `[pt-br + en]`
 
 > 
+> _all creative non-code work here is [licensed](https://creativecommons.org/licenses/by-sa/2.0/) by (cc-by-sa) marcos assis_
+
+> 
 > _this library is in early stage of development_. 
 > _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_.
 
-> 
-> all creative non-code work here is [licenced](https://creativecommons.org/licenses/by-sa/2.0/) by (cc-by-sa) marcos assis
