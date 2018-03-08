@@ -42,7 +42,7 @@ metamero.tumblr.com
 ```
 [go USB HID! make your device appears as joystick/gamepad(s) on your OS(any)]
     for 'pro micro' board[tested], or any ATmega32U4 board, as 'arduino leonardo'
-    this optional, just include if you want, and your board is supported by this library
+    this optional, just include if (you want and) your board is supported by this library
     this module depends on: 'arduino joystick library'
 ```
 
