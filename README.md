@@ -9,10 +9,6 @@ interfaces for retro/oldschool gamepads
 [game controllers, aka joysticks/joypads/manetes/etc]
 ```
 
-> _this library is in early stage of development_
-
-> _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_
-
 ## `by`
 
 ```
@@ -71,6 +67,12 @@ examples!
         ultra-easy and intuitive *minimalist* interfaces and program flow
         and growing documentation
 ```
+
+
+> _this library is in early stage of development_
+> 
+> _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_
+
 
 ## `docs`
 
