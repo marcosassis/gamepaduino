@@ -23,11 +23,12 @@ metamero.tumblr.com
 #### `physical controllers interfaces/protocols`
 ```
 [read gamepads/controllers from your arduino-compatible board]
+
     SNES controller interface
     N64 controller interface
 ```
+#### `multiplayer`
 ```
-multiplayer
     [read multiple controllers on the fly]
     [with cool specialization/optimization for SNES multiplayer protocol]
         optional, turn on by default, easy to turn off
