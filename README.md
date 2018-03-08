@@ -18,9 +18,9 @@ metamero.tumblr.com
 
 ## `now`
 
-`now available on gamepad library`
+`available on gamepad library`
 
-#### `physical controllers interfaces/protocols`
+##### `physical controllers interfaces/protocols`
 ```
 [read gamepads/controllers from your arduino-compatible board]
 
