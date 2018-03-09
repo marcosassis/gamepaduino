@@ -10,7 +10,8 @@ namespace gamepad {
 //              deep copy semantics
 //              and define two 
 
-/// gamepad
+/** gamepad
+ */
 class gamepad: public buttonset
 {
 protected:
