@@ -3,14 +3,14 @@
 
 //#include "gamepad.h"
 #include "SNES_gamepad.h"
-#include "xmidiusb.h"
+//#include "xmidiusb.h"
+#include <MIDI.h>
 
+namespace gamepad {
 
+// create instance? derivate?
 
-
-
-
-template<class gamepad_type, class XMIDIUSB_type=XMIDIUSB_class>
+template<class gamepad_type>
 class gamepad_midi: public active_gamepad<gamepad_type> {
 protected:
   uint8_t channel;
@@ -139,7 +139,7 @@ struct note_map: public gamepad_midi<gamepad_type,XMIDIUSB_type> {
 };
 
 
-
+}
 #endif // _GAMEPAD_MIDI_H
 
 

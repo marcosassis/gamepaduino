@@ -1,7 +1,7 @@
 #ifndef _BUTTONSET_H
 #define _BUTTONSET_H
 
-#include "gamepad_definitions.h"
+#include "Arduino.h"
 
 namespace gamepad {
 
@@ -34,7 +34,7 @@ public:
   virtual bool get_button_state(uint8_t index) const = 0;
   virtual bool button_is_pressed(uint8_t index) const {
     return get_button_state(index);
-    // forcing positive logic for library consistency and understandability
+    // forcing positive logic semantics for library consistency and understandability
   }
   virtual void set_button_state(uint8_t index, bool bs) = 0;
 

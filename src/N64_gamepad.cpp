@@ -2,7 +2,7 @@
 
 namespace gamepad {
 
-#define N64_PIN_DIR DDRD
+#define N64_PIN_DIR DDRD // todo: generalize for other pins/registers
 #define N64_PIN_PIN PIND
 
 #define N64_PIN_HIGH(pinbit) ((N64_PIN_DIR &= ~((pinbit))))
@@ -49,6 +49,7 @@ void N64_gamepad::AndrewBrownInitialize()
   }
 }
 
+// todo: assert MCU is running on exactly 16Mhz
 void N64_gamepad::AndrewBrownSend(unsigned char *buffer, char length)
 {
   // Send these bytes
@@ -174,4 +175,4 @@ void N64_gamepad::AndrewBrownGet()
     goto read_loop;
 }
 
-}
+} // gamepad

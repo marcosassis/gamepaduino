@@ -24,7 +24,7 @@ public:
   static const uint8_t N_BUTTONS = 12;
   static const String names[N_BUTTONS]; // both of these should have in any concrete class of gamepads
   //      0  1  2       3      4   5     6     7      8  9  10 11
-  enum b {B, Y, select, start, up, down, left, right, A, X, L, R};
+  enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
 
 
   SNES_gamepad(const SNES_gamepad& other)
@@ -57,8 +57,9 @@ protected:
 
 
 // if you want to TURN OFF this optimization class for SNES controllers protocol,
-// just define _GAMEPAD_SNES_SINGLEPLAYER before include this file (if you don't, never mind)
-#ifndef _GAMEPAD_SNES_SINGLEPLAYER
+// just define _GAMEPAD_SINGLEPLAYER before include this file
+// (if you want muliplayer, never mind, for default it will be compiled)
+#ifndef _GAMEPAD_SINGLEPLAYER
 #define _GAMEPAD_SNES_MULTIPLAYER
 }//end namespace gamepad
 #include "multiplayer.h"
@@ -96,7 +97,7 @@ struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
   virtual void clock_read_bit_all(uint8_t i);
 };
 
-#endif // _GAMEPAD_SNES_SINGLEPLAYER
+#endif // #ifndef _GAMEPAD_SINGLEPLAYER
 
 }//end namespace gamepad
 

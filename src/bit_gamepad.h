@@ -33,10 +33,12 @@ public:
 
   virtual bool get_button_state(uint8_t index) const {
     //return bit_is_set(buttons, index);
-    return buttons & (uint_t(1) << index);
+    return buttons & (uint_t(1) << index); // OK
   }
 
   virtual void set_button_state(uint8_t index, bool bs) {
+    //bitWrite(buttons,index,bs);
+    
     if (bs)
       //setb(buttons,index);
       //SETBIT(buttons,index);

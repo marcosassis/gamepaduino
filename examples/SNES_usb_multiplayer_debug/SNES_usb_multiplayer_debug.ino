@@ -31,8 +31,8 @@ void loop() {
   //multi.players.get(0)->print(); Serial.print("\t");
   //multi.players.get(1)->print(); Serial.println();
   
-  //p1.print(); Serial.print("\t");
-  //p2.print(); Serial.println("\n");
+  p1.print(); Serial.print("\t");
+  p2.print(); Serial.println();//("\n");
 
   //p1.read();
   //p2.read();

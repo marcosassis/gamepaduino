@@ -29,7 +29,7 @@ void SNES_gamepad::read_imp() {
 static const String SNES_gamepad::names[] = {"B", "Y", "select", "start", "up", "down", "left", "right", "A", "X", "L", "R"};
 
 
-#ifndef _GAMEPAD_SNES_SINGLEPLAYER
+#ifdef _GAMEPAD_SNES_MULTIPLAYER
 // clock and latch logic only once (first controller)
 void SNES_multiplayer::read() {
   
@@ -57,6 +57,7 @@ virtual void read() {
   action_after_read();
 }
 */
+// todo: generalize this
 
 void SNES_multiplayer::latch_all() {
   this->players.get(0)->latch(); // only first will really latch all controllers
@@ -78,7 +79,7 @@ void SNES_multiplayer::clock_read_bit_all(uint8_t i) {
 
 void SNES_multiplayer::read_all() {
   for(uint8_t p = 0; p<players.size(); ++p) {
-    this->players.get(p)->buttons = 0;//~gamepad_t::uint_t(0);
+    this->players.get(p)->buttons = 0;//todo: i thing this can be washed out
   }
   delayMicroseconds(6);
   read_bit_all(0); //first bit read before clock.
@@ -87,11 +88,10 @@ void SNES_multiplayer::read_all() {
   }
   for(uint8_t p = 0; p<players.size(); ++p) {
     this->players.get(p)->buttons = ~(this->players.get(p)->buttons);
-    //this->players.get(p)->set_button_state(0,!(this->players.get(p)->get_button_state(0)));
-  } // ok(ufa) of course i'm gonna generalize this
+  }
 }
 
-#endif // _GAMEPAD_SNES_SINGLEPLAYER
+#endif // _GAMEPAD_SNES_MULTIPLAYER
 
 
-}
+} // gamepad
