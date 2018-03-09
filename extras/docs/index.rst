@@ -7,7 +7,7 @@
 Class Documentation
 ===================
 
-.. doxygenclass:: gamepad
+.. doxygenclass:: gamepaduino
    :project: gamepad
    :members:
 
