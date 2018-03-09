@@ -5,12 +5,44 @@
 
 namespace gamepad {
 
+/// this abstract class is the essential code-interface for gamepads
+/**
 
-// IMPORTANT: all concrete classes should have
-//              deep copy semantics
-//              and define two 
+IMPORTANT: all concrete classes should
+               -> have deep copy semantics
+               -> implement all abstract member functions (of all bases)
+               -> and define these following public entities:
+                      typedef * gamepad_base;                // 1
+                      static const uint8_t N_BUTTONS = *;    // 2
+                      static const String names[N_BUTTONS];  // 3
+                      enum bid {*, *, ..., *};               // 4
+                  
+                  
+examples from SNES_gamepad.h
+                  
+1:  you must typedef which is the next base class in the hierarchy.
+    ex.:
+        typedef bit_gamepad<uint16_t> gamepad_base;
 
-/** gamepad
+2:  it's useful to have number of buttons in compile time
+    (at least if you're not into some dynamically size changing monster)
+    ex.:
+        static const uint8_t N_BUTTONS = 12;
+        
+3:  the same way, names are required, so you can implement the first
+    abstract function of the hierarchy (remember to check them all):
+        (virtual) String* (get_button_names::)get_button_names() const = 0;
+    ex.:
+        static const String names[N_BUTTONS];
+
+4:  following this statically prepared convenience, user could use button ids as
+    coherently (possible auto)searching button name in a :: manner.
+    ex.:
+        //      0  1  2       3      4   5     6     7      8  9  10 11
+        enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
+
+please follow these names and conventions for consistency
+
  */
 class gamepad: public buttonset
 {
@@ -22,15 +54,18 @@ protected:
   virtual void latch() = 0;
   virtual void read_imp() = 0;
 
-  virtual void action_before_read() {}
-  virtual void action_after_read() {}
-
 public:
 
   gamepad(uint8_t id, uint8_t n_buttons, directional* dpads=NULL, uint8_t n_dpads=0)
   : buttonset(id,n_buttons), dpads(dpads), n_dpads(n_dpads)
   {}
 
+  /// please check active_gamepad.h before override directly
+  /// from gamepad::action_*_read member functions
+  virtual void action_before_read() {}
+  virtual void action_after_read() {}
+
+  /// the BASIC idea of gamepad library/interface is to READ controllers INPUTS->MCU
   virtual void read() {
     action_before_read();
     noInterrupts();

@@ -5,16 +5,7 @@
 
 namespace gamepad {
 
-
-template<typename Type> void print_bits(Type var) {
-  bool bit;
-  for(int i=(sizeof(Type)*8)-1; i>=0; --i) {
-    bit = var & (Type(1) << i);
-    Serial.print(unsigned(bit));
-  }
-}
-
-
+/// static_subset is partial implementation of subset (for most common case/choice)
 template<uint8_t N>
 struct static_subset: public subset
 {

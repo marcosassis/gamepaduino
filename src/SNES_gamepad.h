@@ -2,6 +2,9 @@
 #define _SNES_GAMEPAD_H
 
 #include "bit_gamepad.h"
+#ifndef _GAMEPAD_SINGLEPLAYER
+#include "multiplayer.h"
+#endif
 
 namespace gamepad {
 
@@ -22,7 +25,7 @@ public:
 
   typedef bit_gamepad<uint16_t> gamepad_base;
   static const uint8_t N_BUTTONS = 12;
-  static const String names[N_BUTTONS]; // both of these should have in any concrete class of gamepads
+  static const String names[N_BUTTONS];
   //      0  1  2       3      4   5     6     7      8  9  10 11
   enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
 
@@ -44,8 +47,9 @@ public:
     return names;
   }
 
-#ifndef _GAMEPAD_SNES_SINGLEPLAYER
+#ifndef _GAMEPAD_SINGLEPLAYER
   friend struct SNES_multiplayer;
+  friend struct multiplayer<SNES_gamepad>; // naiver
 #endif
   
 protected:
@@ -61,10 +65,6 @@ protected:
 // (if you want muliplayer, never mind, for default it will be compiled)
 #ifndef _GAMEPAD_SINGLEPLAYER
 #define _GAMEPAD_SNES_MULTIPLAYER
-}//end namespace gamepad
-#include "multiplayer.h"
-namespace gamepad {
-
 
 //template<class gamepad_type>
 struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
@@ -89,8 +89,7 @@ struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
     players.add(&p5); // é nois joga bomberman fi 
   }
 
-  // clock and latch logic only once (first controller)
-  virtual void read();
+  /// clock and latch logic only once (first controller)
   virtual void latch_all();
   virtual void read_all();
   virtual void read_bit_all(uint8_t i);

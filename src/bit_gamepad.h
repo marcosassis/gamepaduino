@@ -5,19 +5,22 @@
 
 namespace gamepad {
 
+/// print all the bits of any primitive type variable
+template<typename Type> void print_bits(Type var) {
+  bool bit;
+  for(int i=(sizeof(Type)*8)-1; i>=0; --i) {
+    bit = var & (Type(1) << i);
+    Serial.print(unsigned(bit));
+  }
+}
 
-// bit representation for gamepads that use it
+/// bit representation for gamepads that use it
 template<typename uint_type>
 class bit_gamepad: public gamepad
 {
 protected:
   uint_type buttons = 0; // each bit is a button, positive logic
   uint_type buttons_last = 0;
-
-  virtual void action_before_read() {
-    buttons_last = buttons;
-    buttons = 0;
-  }
 
 public:
 
@@ -67,8 +70,18 @@ public:
     return buttons_last;
   }
   
-  virtual void print() {
-    print_bits(buttons);
+  virtual void print(bool verbose=false) {
+    if(verbose)
+      gamepad::print();
+    else
+      print_bits(buttons);
+  }
+
+  /// override of gamepad:: , you can override but must call 
+  /// this bit_gamepad::action_before_read inside yours.
+  virtual void action_before_read() {
+    buttons_last = buttons;
+    buttons = 0;
   }
 };
 

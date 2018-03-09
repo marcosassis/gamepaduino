@@ -89,9 +89,9 @@ struct N64_gamepad: public bit_gamepad<uint32_t>
 protected:
 
   directional dpads[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
-  char raw_dump[33]; // 1 received bit per byte // why 33??
-  uint8_t N64_pin_bit_mask;
-  uint8_t N64_pin;
+  char raw_dump[33];        /// 1 received bit per byte // why 33??
+  uint8_t N64_pin_bit_mask; /// memory(1) vs time(1*N)
+  uint8_t N64_pin;          /// arduino pin (not AVR PD)
   
 public:
 
@@ -140,7 +140,6 @@ public:
   }
 
 protected:
-
   
   virtual void latch() { // called by gamepad_base::read()
     unsigned char command[] = {0x01};
@@ -166,6 +165,7 @@ protected:
     if(aux<analog_range.ymin) analog_range.ymin=aux+1;
   }
 
+  /// memory vs time again (time inside AndrewBrown's functions is crucial)
   void translate_raw_data() {
     // "The get_N64_status function sloppily dumps its data 1 bit per byte
     // into the get_status_extended char array. It's our job to go through

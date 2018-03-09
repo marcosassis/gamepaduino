@@ -5,7 +5,7 @@
 
 namespace gamepad {
 
-
+/// helper function, linear search in an array
 template<class Type=String>
 int get_id_by_name(Type aname, Type* names, unsigned max_names) {
   int ret = -1;
@@ -18,7 +18,9 @@ int get_id_by_name(Type aname, Type* names, unsigned max_names) {
   return ret;
 }
 
-
+/// this abstract class is helper for gamepad (abstract class) interface
+/// this is also derived from subset, which is not gamepad,
+/// but they have things in common
 class buttonset
 {
 protected:

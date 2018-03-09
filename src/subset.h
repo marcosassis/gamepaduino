@@ -5,7 +5,10 @@
 
 namespace gamepad {
   
-
+/// subset is not gamepad
+/// but is almost, it's parent can be a gamepad(or not)
+/// so a subset does nothing per se, except mapping
+/// one set of (button)IDs onto another
 class subset: public buttonset
 {
 protected:

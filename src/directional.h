@@ -5,7 +5,9 @@
 
 namespace gamepad {
 
-
+/// directional is a subset very specific, but ubiquitous
+/// so it's standard interface of gamepad template class
+/// refer to base classes for subset semantics
 struct directional: public static_subset<4>
 {
   enum directions { up, down, left, right };
