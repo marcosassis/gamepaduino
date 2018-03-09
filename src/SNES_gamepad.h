@@ -5,7 +5,7 @@
 
 namespace gamepad {
 
-
+/// command and read a SNES controller
 class SNES_gamepad: public bit_gamepad<uint16_t> {
 protected:
 

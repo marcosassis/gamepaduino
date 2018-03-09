@@ -6,58 +6,56 @@
 
 namespace gamepad {
 
-/// serial protocol interface for commanding a N64 controller
+/// command and read a N64 controller
 /**
+  available pins 
 
-available pins 
+  arduino 
 
-arduino 
+  available pins: 0,1,2,3,4,5,6,7
+  (in general arduino boards, digital pins 0..7 correspond to PD bits 0..7)
 
-available pins: 0,1,2,3,4,5,6,7
-(in general arduino boards, digital pins 0..7 correspond to PD bits 0..7)
+  ATmega168/328P-Arduino Pin Mapping - PD 
+  https://www.arduino.cc/en/Hacking/PinMapping168
+                     PD0   Digital pin 0
+                     PD1   Digital pin 1
+                     PD2   Digital pin 2
+                     PD3   Digital pin 3
+                     PD4   Digital pin 4
+                     PD5   Digital pin 5
+                     PD6   Digital pin 6
+                     PD7   Digital pin 7
 
-ATmega168/328P-Arduino Pin Mapping - PD 
-https://www.arduino.cc/en/Hacking/PinMapping168
-                   PD0   Digital pin 0
-                   PD1   Digital pin 1
-                   PD2   Digital pin 2
-                   PD3   Digital pin 3
-                   PD4   Digital pin 4
-                   PD5   Digital pin 5
-                   PD6   Digital pin 6
-                   PD7   Digital pin 7
+  pro micro [ATmega32U4]
 
-pro micro [ATmega32U4]
+  available pins: 2,3,4,6
 
-available pins: 2,3,4,6
+  Arduino Pin Mapping - PD 
+  https://www.arduino.cc/en/Hacking/PinMapping32u4
+  (OC0B/SCL/INT0)    PD0   Digital pin 3 (SCL)(PWM)
+  (SDA/INT1)         PD1   Digital pin 2 (SDA)
+  (RX D1/AIN1/INT2)  PD2   Digital pin 0 (RX) // nop
+  (TXD1/INT3)        PD3   Digital pin 1 (TX) // no 
+    (please don't use TX/RX on pro micro, I think you'd have to
+    flash with an external programmer if this messes up)
+  (ICP1/ADC8)        PD4   Digital pin 4
+  (XCK1/#CTS)        PD5   TXLED
+  (T1/#OC4D/ADC9)    PD6   Digital pin 12 // ??? unavailable on board
+  (T0/OC4D/ADC10)    PD7   Digital Pin 6 (PWM)
 
-Arduino Pin Mapping - PD 
-https://www.arduino.cc/en/Hacking/PinMapping32u4
-(OC0B/SCL/INT0)    PD0   Digital pin 3 (SCL)(PWM)
-(SDA/INT1)         PD1   Digital pin 2 (SDA)
-(RX D1/AIN1/INT2)  PD2   Digital pin 0 (RX) // nop
-(TXD1/INT3)        PD3   Digital pin 1 (TX) // no 
-  (please don't use TX/RX on pro micro, I think you'd have to
-  flash with an external programmer if this messes up)
-(ICP1/ADC8)        PD4   Digital pin 4
-(XCK1/#CTS)        PD5   TXLED
-(T1/#OC4D/ADC9)    PD6   Digital pin 12 // ??? unavailable on board
-(T0/OC4D/ADC10)    PD7   Digital Pin 6 (PWM)
+  pins_arduino.h [pro micro]:
 
-pins_arduino.h [pro micro]:
-
-const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
-	_BV(2), // D0 - PD2
-	_BV(3),	// D1 - PD3
-	_BV(1), // D2 - PD1
-	_BV(0),	// D3 - PD0
-	_BV(4),	// D4 - PD4
-	_BV(6), // D5 - PC6
-	_BV(7), // D6 - PD7
-  ...
-	_BV(6), // D12 - PD6 // ??? unavailable on board
-  ...
-
+  const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
+    _BV(2), // D0 - PD2
+    _BV(3),	// D1 - PD3
+    _BV(1), // D2 - PD1
+    _BV(0),	// D3 - PD0
+    _BV(4),	// D4 - PD4
+    _BV(6), // D5 - PC6
+    _BV(7), // D6 - PD7
+    ...
+    _BV(6), // D12 - PD6 // ??? unavailable on board
+    ...
 */
 struct N64_gamepad: public bit_gamepad<uint32_t>
 {
