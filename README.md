@@ -55,8 +55,8 @@ structured interfaces / classes hierarchy
         cool specializations / concrete implementations of controllers out-of-the-box
         flexible options (structured parametrization)
         but with meaningful names, and helpful aliases and includes for beginners
-            the idea is for this library to be **consistently expanded**, and at the same time,
-            **be transparent for beginners**, about this OO/GP internals
+            the idea is for this library to be *consistently expanded*, and at the same time,
+            *be transparent for beginners*, about this OO/GP internals
 ```
 
 ##### `and most important`
@@ -64,7 +64,7 @@ structured interfaces / classes hierarchy
 ```
 examples!
     [with minimal number of commands ever]
-        ultra-easy and intuitive *minimalist* interfaces and program flow
+        ultra-easy and intuitive minimalist interfaces and program flow
         and growing documentation
 ```
 
