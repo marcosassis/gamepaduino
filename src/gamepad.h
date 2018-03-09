@@ -6,7 +6,11 @@
 namespace gamepad {
 
 
-// IMPORTANT: all concrete classes should have deep copy semantics
+// IMPORTANT: all concrete classes should have
+//              deep copy semantics
+//              and define two 
+
+/// gamepad
 class gamepad: public buttonset
 {
 protected:

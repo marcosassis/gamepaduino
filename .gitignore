@@ -1,7 +1,6 @@
 .vs
 __vm
 Debug
-.vs
-__vm
-Debug
 gamepaduino.componentinfo.xml
+extras/docs/_build
+extras/docs/xml
