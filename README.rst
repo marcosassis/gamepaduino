@@ -85,3 +85,4 @@ examples!
 > _this library is in early stage of development_. 
 > _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_.
 
+----
