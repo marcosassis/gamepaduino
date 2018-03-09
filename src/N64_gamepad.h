@@ -6,8 +6,9 @@
 
 namespace gamepad {
 
-/// command and read a N64 controller
-/**
+//! command and read a N64 controller
+/*!
+
   available pins 
 
   arduino 
@@ -56,7 +57,7 @@ namespace gamepad {
     ...
     _BV(6), // D12 - PD6 // ??? unavailable on board
     ...
-*/
+ */
 struct N64_gamepad: public bit_gamepad<uint32_t>
 {
   typedef bit_gamepad<uint32_t> gamepad_base;
