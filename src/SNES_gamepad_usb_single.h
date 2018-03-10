@@ -3,7 +3,7 @@
 #define _GAMEPAD_SINGLEPLAYER // before include
 #include "SNES_gamepad_usb.h"
 
-// ow, meaningful defines and typedefs/using are here to really encapsulate these
+// ow, meaningful defines and typedefs/using are here to really encapsulate all these
 // options (that still available and exampled here for advanced users)
 // so *noob* please: just use this as in examples, and it's really easy. have fun!
 // and super users should derive some of these nice classes the same way

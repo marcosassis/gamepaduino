@@ -16,7 +16,7 @@ protected:
   uint8_t clock_pin;
   uint8_t data_pin;
 
-  directional dpad;
+  directional thedpad;
 
   virtual void latch();
   virtual void read_imp();
@@ -26,16 +26,19 @@ public:
   typedef bit_gamepad<uint16_t> gamepad_base;
   static const uint8_t N_BUTTONS = 12;
   static const String names[N_BUTTONS];
-  //      0  1  2       3      4   5     6     7      8  9  10 11
+  //        0  1  2       3      4   5     6     7      8  9  10 11
   enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
+  static const uint8_t N_DPADS = 2;
+  enum did { dpad }; // convention (templates functions will love it)
 
-
+  /// deep copy
   SNES_gamepad(const SNES_gamepad& other)
   : SNES_gamepad(other.id, other.data_pin, other.clock_pin, other.latch_pin)
   {}
 
+  /// main constructor
   SNES_gamepad(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
-  : dpad(4,5,6,7, *this), gamepad_base(id, 12, &dpad, 1),
+  : thedpad(4,5,6,7, *this), gamepad_base(id, 12, &thedpad, 1),
     latch_pin(latch_pin), clock_pin(clock_pin), data_pin(data_pin)
   {
     pinMode(latch_pin, OUTPUT);
@@ -46,7 +49,17 @@ public:
   virtual String* get_button_names() const {
     return names;
   }
-
+  
+  uint8_t get_latch_pin() const {
+    return latch_pin;
+  }
+  uint8_t get_clock_pin() const {
+    return clock_pin;
+  }
+  uint8_t get_data_pin() const {
+    return data_pin;
+  }
+  
 #ifndef _GAMEPAD_SINGLEPLAYER
   friend struct SNES_multiplayer;
   friend struct multiplayer<SNES_gamepad>; // don't use directly this
@@ -88,11 +101,30 @@ struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
   : multiplayer_base(p1,p2,p3,p4) {
     players.add(&p5); // é nois joga bomberman fi 
   }
+  
+  // virtual void read() = multiplayer::read_all_without_interrupts()
 
+protected:
+
+  /// override multiplayer<SNES_gamepad>::latch_all_read_imp_all()
+  virtual void latch_all_read_imp_all() {
+    latch_all_THEN_read_imp_all();
+    // let's choose this path here, as we'll latch everybody only once (see below)
+  }
+  
   /// clock and latch logic only once (first controller)
-  virtual void latch_all();
-  virtual void read_all();
-  virtual void read_bit_all(uint8_t i);
+  virtual void latch_all(){
+    this->players.get(0)->latch(); // only first will really latch all controllers
+  }
+  
+  virtual void read_imp_all();
+
+  virtual void read_bit_all(uint8_t i) {
+    for(uint8_t p = 0; p<players.size(); ++p)
+      this->players.get(p)->read_bit(i);
+  }
+  
+  /// clock and latch logic only once (first controller)
   virtual void clock_read_bit_all(uint8_t i);
 };
 

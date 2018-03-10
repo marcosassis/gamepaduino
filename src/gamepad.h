@@ -9,7 +9,7 @@ namespace gamepad {
 /**
 
 IMPORTANT: all concrete classes should
-               -> have deep copy semantics
+               -> have deep copy semantics*
                -> implement all abstract member functions (of all bases)
                -> and define these following public entities:
                       typedef * gamepad_base;                // 1
@@ -17,7 +17,9 @@ IMPORTANT: all concrete classes should
                       static const String names[N_BUTTONS];  // 3
                       enum bid {*, *, ..., *};               // 4
                   
-                  
+*(think it's ok to allow copied objects share buffers,
+  since it's same player/controller anyway. todo: study this on N64)
+
 examples from SNES_gamepad.h
                   
 1:  you must typedef which is the next base class in the hierarchy.
@@ -25,21 +27,36 @@ examples from SNES_gamepad.h
         typedef bit_gamepad<uint16_t> gamepad_base;
 
 2:  it's useful to have number of buttons in compile time
-    (at least if you're not into some dynamically size changing monster)
+        (at least if you're not into some dynamically size changing monster - oh no -
+        OR something as your controller class allows each instance to have different
+        number of buttons/values, as you could do for game-time plug accessories, e.g.)
+            (then this could be absent, gamepad interface allows it,
+            and buttonset already implement this button counting dynamically)
     ex.:
         static const uint8_t N_BUTTONS = 12;
         
 3:  the same way, names are required, so you can implement the first
     abstract function of the hierarchy (remember to check them all):
+    
         (virtual) String* (get_button_names::)get_button_names() const = 0;
-    ex.:
-        static const String names[N_BUTTONS];
+        
+    ex. (you see how static const N_BUTTONS is useful):
+    
+        static const String names[N_BUTTONS]; // defined in cpp file
 
 4:  following this statically prepared convenience, user could use button ids as
     coherently (possible auto)searching button name in a :: manner.
     ex.:
         //      0  1  2       3      4   5     6     7      8  9  10 11
         enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
+        
+        
+so **bid** is: button id
+
+the same way we'll use, when makes sense:
+    
+    **did** is: directional pad (dpad) id
+    **aid** is: analog id (analog can be multi-axes: todo)
 
 please follow these names and conventions for consistency
 

@@ -2,14 +2,16 @@
 
 namespace gamepad {
 
-void SNES_gamepad::latch() {
+void SNES_gamepad::latch()
+{
   digitalWrite(latch_pin, HIGH);//latch pulse, lock the state of the buttons in the register
   delayMicroseconds(12);
   digitalWrite(latch_pin, LOW);
 }
 
-void SNES_gamepad::read_imp() {
-
+/// hey, compare me to my "friend"'s SNES_multiplayer::read_imp()
+void SNES_gamepad::read_imp()
+{
   delayMicroseconds(12);
   read_bit(0); //first bit read before clock.
 
@@ -31,39 +33,30 @@ static const String SNES_gamepad::names[] =
 
 #ifdef _GAMEPAD_SNES_MULTIPLAYER
 
-// clock and latch logic only once (first controller)
-void SNES_multiplayer::latch_all() {
-  this->players.get(0)->latch(); // only first will really latch all controllers
-}
-
-void SNES_multiplayer::read_all() {
-  /*for(uint8_t p = 0; p<players.size(); ++p) {
-    this->players.get(p)->buttons = 0;//todo: i thing this can be washed out
-  }*/
+/// hey, compare us to my "friend"'s SNES_gamepad::read_imp()
+void SNES_multiplayer::read_imp_all()
+{
   delayMicroseconds(6);
   read_bit_all(0); //first bit read before clock.
   for (uint8_t i = 1; i < 16; i++) { // clock & read
     clock_read_bit_all(i);
   }
+  gamepad_pointer pp;
   for(uint8_t p = 0; p<players.size(); ++p) {
-    this->players.get(p)->buttons = ~(this->players.get(p)->buttons);
+    pp = this->players.get(p);
+    pp->buttons = ~(pp->buttons);
   }
 }
 
-void SNES_multiplayer::read_bit_all(uint8_t i) {
-  for(uint8_t p = 0; p<players.size(); ++p) {
-    this->players.get(p)->read_bit(i);
-  }
-}
-
-void SNES_multiplayer::clock_read_bit_all(uint8_t i) {
-  digitalWrite(this->players.get(0)->clock_pin, HIGH);
+void SNES_multiplayer::clock_read_bit_all(uint8_t i)
+{
+  gamepad_pointer p1 = this->players.get(0);
+  digitalWrite(p1->clock_pin, HIGH);
   delayMicroseconds(6);
   read_bit_all(i);
-  digitalWrite(this->players.get(0)->clock_pin, LOW);
+  digitalWrite(p1->clock_pin, LOW);
   delayMicroseconds(6);
 }
-
 
 #endif // _GAMEPAD_SNES_MULTIPLAYER
 

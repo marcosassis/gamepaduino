@@ -67,7 +67,7 @@ struct N64_gamepad: public bit_gamepad<uint32_t>
   
   // number, names and ids of buttons, as demanded by gamepad interface
   static const uint8_t N_BUTTONS = 16;
-  static const String names[N_BUTTONS]; // both of these should have in any concrete class of gamepads
+  static const String names[N_BUTTONS]; // these should have in any concrete class of gamepads
   //        0         1         2     3       4     5       6       7
   enum bid {A,        B,        Z,    start,  Dup,  Ddown,  Dleft,  Dright,
   //        8         9         10    11      12    13      14      15
@@ -77,8 +77,8 @@ struct N64_gamepad: public bit_gamepad<uint32_t>
   //              this action will reset controller analog position, as if console has started
   //              more details https://github.com/marcosassis/gamepaduino/wiki/N64#n64-controller-reset
   
-  // number, names and ids of directional pads, for consistency
-  static const uint8_t n_dpads = 2;
+  // number and ids of directional pads, for consistency
+  static const uint8_t N_DPADS = 2;
   enum did { Dpad, Cpad };
   
   // todo: generalize analog interface in gamepad class
@@ -98,12 +98,14 @@ protected:
   
 public:
 
+  /// deep copy
   N64_gamepad(const N64_gamepad& other)
   : N64_gamepad(other.id,other.N64_pin,false)
   {}
 
+  /// main constructor
   N64_gamepad(uint8_t id, uint8_t N64_pin=3, bool init=true)
-  : gamepad_base(id, N_BUTTONS, dpads, n_dpads), N64_pin(N64_pin),
+  : gamepad_base(id, N_BUTTONS, dpads, N_DPADS), N64_pin(N64_pin),
     N64_pin_bit_mask(digitalPinToBitMask(N64_pin))
   {
     if(init)  AndrewBrownInitialize();
@@ -117,7 +119,8 @@ public:
     return N64_pin;
   }
 
-  void AndrewBrownInitialize(); // let's expose these, so user can play with protocol without messing with asm
+  /// let's expose these, so user can play with protocol without messing with asm
+  void AndrewBrownInitialize();
   void AndrewBrownSend(unsigned char *buffer, char length);
   void AndrewBrownGet();
 
@@ -147,13 +150,14 @@ public:
   }
   
 #ifndef _GAMEPAD_SINGLEPLAYER
-  //friend struct N64_multiplayer;//todo
-  friend struct multiplayer<N64_gamepad>; // (for now) use directly this
+  /// each N64_gamepad has it's own single bidirectional communication/data pin, default behavior is optimal
+  friend struct multiplayer<N64_gamepad>; // see multiplayer.h
 #endif
 
 protected:
   
-  virtual void latch() { // called by gamepad_base::read()
+  /// these are called by gamepad_base::read()
+  virtual void latch() {
     unsigned char command[] = {0x01};
     AndrewBrownSend(command, 1);
   }
@@ -194,20 +198,6 @@ protected:
     }
   }
 };
-
-
-// if you want to TURN OFF multiplayer,
-// just define _GAMEPAD_SINGLEPLAYER before include this file
-// (if you want muliplayer, never mind, for default it will be compiled)
-#ifndef _GAMEPAD_SINGLEPLAYER
-#define _GAMEPAD_N64_MULTIPLAYER
-}//end namespace gamepad
-#include "multiplayer.h"
-namespace gamepad {
-
-// TODO
-
-#endif // #ifndef _GAMEPAD_SINGLEPLAYER
 
 }
 #endif // _N64_GAMEPAD_H

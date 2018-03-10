@@ -88,7 +88,7 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
       this->usb_joystick.setXAxisRange(analog_range.ymin, analog_range.ymax);//todo: investigate more this behavior
       this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
       this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);
-      // really, I still don't know what is the "most default" behavior for a usb joystick that is also a N64 controller...
+      // really, I still don't know what is the "most default" behavior for a usb joystick that IS ALSO a N64 controller...
       gamepad_base::action_any_button_changed();
     }
 };
@@ -102,7 +102,7 @@ struct SNES_hid: public gamepad_joystick<SNES_gamepad> {
     joystick_type usb_joystick;
     
     SNES_hid(const SNES_gamepad& other)
-      : SNES_hid(other.id,other.data_pin,other.clock_pin,other.latch_pin)
+      : SNES_hid(other.get_id(),other.get_data_pin(),other.get_clock_pin(),other.get_latch_pin())
     {}
     
     SNES_hid(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
