@@ -90,6 +90,7 @@ struct midi_send_interface
           velocity );
   }
   
+  /// long todo list to implement
   //virtual void program_change(data_byte program_number,                           channel_byte channel_0_15)  {}
   //virtual void control_change(data_byte control_number, data_byte control_value,  channel_byte channel_0_15)  {}
   //virtual void pitch_bend     (int inPitchValue,                                    channel_byte channel_0_15)  {}
