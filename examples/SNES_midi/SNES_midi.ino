@@ -1,19 +1,4 @@
-#include <MIDI.h>
-
-#if defined(USBCON)
-#include <midi_UsbTransport.h>
-
-static const unsigned sUsbTransportBufferSize = 16;
-typedef midi::UsbTransport<sUsbTransportBufferSize> UsbTransport;
-
-UsbTransport sUsbTransport;
-
-MIDI_CREATE_INSTANCE(UsbTransport, sUsbTransport, MIDI);
-
-#else // No USB available, fallback to Serial
-MIDI_CREATE_DEFAULT_INSTANCE();
-#endif
-
+#include "midi_usb_interface.h"
 #include "SNES_gamepad.h"
 using namespace gamepad;
 
@@ -30,14 +15,23 @@ SNES_gamepad p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
 
 SNES_multiplayer multi(p1,p2);
 
-void setup() {}
+meta::midi::midi_usb_interface midiusb;
+
+void setup() {
+  Serial.begin(9600);
+}
 
 void loop() {
   multi.read();
-  if(p1.button_state_has_changed(SNES_gamepad::b::B)) { // done: change b name to more significative
-    if(p1.button_is_pressed(SNES_gamepad::b::B))
-      MIDI.sendNoteOn(42, 127, 0);
+  if(p1.button_state_has_changed(SNES_gamepad::bid::B)) {
+    if(p1.button_is_pressed(SNES_gamepad::bid::B))
+      midiusb.note_on(0, 69, 127);
     else
-      MIDI.sendNoteOff(42, 127, 0);
+      midiusb.note_on(0, 69, 127);
+    
+    for(uint8_t i=0; i<4; ++i) {
+      Serial.print(midiusb.event[0],HEX); Serial.print("\t");
+    }
+    Serial.println();
   }
 }

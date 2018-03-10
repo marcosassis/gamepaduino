@@ -61,8 +61,8 @@ public:
   }
   
 #ifndef _GAMEPAD_SINGLEPLAYER
-  friend struct SNES_multiplayer;
-  friend struct multiplayer<SNES_gamepad>; // don't use directly this
+  friend struct SNES_multiplayer;/// use this if you want multiple SNES controllers support
+  friend struct multiplayer<SNES_gamepad>; /// don't use directly this
 #endif
   
 protected:
@@ -114,7 +114,7 @@ protected:
   
   /// clock and latch logic only once (first controller)
   virtual void latch_all(){
-    this->players.get(0)->latch(); // only first will really latch all controllers
+    this->players.get(0)->latch(); // only first will really latch(same pin) all controllers
   }
   
   virtual void read_imp_all();
