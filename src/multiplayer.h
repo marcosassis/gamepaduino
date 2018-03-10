@@ -33,15 +33,11 @@ struct multiplayer
     players.add(&p4);
   }
 
-  /// please override for each specific gamepad protocol supporting multiplayer
+  /// please override this and/other methods for each specific
+  /// gamepad protocol supporting multiplayer
   virtual void read() {
-    naive_read_all(); // unfortunately this is safer in generic
-    //read_all_without_interrupts();
-  }
-  
-  void naive_read_all() {
-    for(uint8_t i = 0; i<players.size(); ++i)
-      players.get(i)->read();
+    //naive_read_all(); // unfortunately this is safer in generic
+    read_all_without_interrupts();
   }
   
   void action_before_read_all() {
@@ -54,6 +50,13 @@ struct multiplayer
       this->players.get(p)->action_after_read();
   }
   
+protected:
+  
+  void naive_read_all() {
+    for(uint8_t i = 0; i<players.size(); ++i)
+      players.get(i)->read();
+  }
+
   /// don't override non-virtual members (ever), other points of extension are provided
   void read_all_without_interrupts() {
     action_before_read_all();
@@ -73,11 +76,25 @@ struct multiplayer
   }
   */
   
-  /// latch_all THEN read_all
   /// if your protocol is too time sensitive or
   /// it's architecture is different, override this
   /// or other methods of multiplayer (virtual) interface
   virtual void latch_all_read_imp_all() {
+    latch_and_read_imp_all(); // possible paths
+    //latch_all_then_read_imp_all();
+  }
+
+  /// latch AND read all
+  void latch_and_read_imp_all() {
+    for(uint8_t p = 0; p<players.size(); ++p) {
+      gamepad_pointer pp = this->players.get(p);
+      pp->latch();  
+      pp->read_imp();  // ow damn it, (only) pointer dereferenced (again) in this middle cause N64 protocol to fail waw
+    }
+  }  
+  
+  /// latch_all THEN read_all
+  void latch_all_then_read_imp_all() {
     latch_all();  
     read_imp_all();     
   }
@@ -85,12 +102,12 @@ struct multiplayer
   /// PLEASE derive from this class and override these methods for each
   /// multiplayer specific protocol (see SNES_multiplayer)  
   virtual void latch_all() {
-   for(uint8_t p = 0; p<players.size(); ++p)
-    this->players.get(p)->latch();   
+    for(uint8_t p = 0; p<players.size(); ++p)
+      this->players.get(p)->latch();   
   }
   virtual void read_imp_all() {
-   for(uint8_t p = 0; p<players.size(); ++p)
-    this->players.get(p)->read_imp();   
+    for(uint8_t p = 0; p<players.size(); ++p)
+      this->players.get(p)->read_imp();   
   }  
 
 };

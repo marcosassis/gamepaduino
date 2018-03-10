@@ -6,7 +6,7 @@
 namespace gamepad {
 
 /// this template class is an interface intended to all gamepad:: classes that makes OUTPUTS
-/// derive from this class is 1 option to use/extend this library in this way
+/// derive from this class is 1 option to use/extend this library in this way, or
 /// user can always monitor changes and read button states inside loop(), action according 
 template<class gamepad_type>
 struct active_gamepad: public gamepad_type {
