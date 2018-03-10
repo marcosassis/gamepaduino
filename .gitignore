@@ -4,3 +4,4 @@ Debug
 gamepaduino.componentinfo.xml
 extras/docs/_build
 extras/docs/xml
+src/midi_proto/org
