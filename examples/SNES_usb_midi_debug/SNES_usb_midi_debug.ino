@@ -31,6 +31,8 @@ typedef   midi_instrument<SNES_gamepad>   SNES_midi;
 using     meta::midi::midi_usb_interface;
 
 midi_usb_interface  midiusb;
+//          0  1  2       3      4   5     6     7      8  9  10 11
+//enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
 SNES_midi::note_t   note_map[SNES_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,8,9,10,11};
 midi_data_t         basetone=69; // A4
 SNES_midi           p1midi(p1, midiusb, note_map, basetone);
