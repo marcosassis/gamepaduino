@@ -5,24 +5,17 @@
 
 namespace gamepad {
   
-/// multiplayer class is not a gamepad [anymore], it is a collection of gamepads (simplest)
+/// multiplayer class is not a gamepad, it is a collection of gamepads (simplest)
 /// friend this class instantiated for your <gamepad_type> inside gamepad_type definition
-/// see SNES_gamepad.h for an example
+/// (as it uses read_imp and latch protected interface) see SNES_gamepad.h for an example
 template<class gamepad_type>
-struct multiplayer//: public gamepad_type
+struct multiplayer
 {
   typedef gamepad_type gamepad_t;
   typedef gamepad_type* gamepad_pointer;
   typedef LinkedList<gamepad_pointer> gamepad_list_t;
 
   gamepad_list_t players;
-
-  /*
-  multiplayer(const gamepad_t& base)
-  : gamepad_t(base) {
-    players.add(this); // first controller = this
-  }
-  */
   
   multiplayer(const gamepad_t& p1) {
     players.add(&p1);
@@ -40,28 +33,34 @@ struct multiplayer//: public gamepad_type
     players.add(&p4);
   }
 
+  /// please override for each specific gamepad protocol supporting multiplayer
   virtual void read() {
-    //naive_read_all();
-    latch_all_read_all();
+    naive_read_all(); // unfortunately this is safer in generic
+    //read_all_without_interrupts();
   }
   
   void naive_read_all() {
-    //gamepad_t::read();
     for(uint8_t i = 0; i<players.size(); ++i)
       players.get(i)->read();
   }
   
-  void latch_all_read_all() {
+  void action_before_read_all() {
     for(uint8_t p = 0; p<players.size(); ++p)
       this->players.get(p)->action_before_read();
+  }
     
-    noInterrupts(); // latch and read all on the same batch
-    latch_all();  
-    read_all();     // (it's not necessarily on the same latch,
-    interrupts();   // but at least without interruptions in the middle)
-    
+  void action_after_read_all() {
     for(uint8_t p = 0; p<players.size(); ++p)
       this->players.get(p)->action_after_read();
+  }
+  
+  /// don't override non-virtual members (ever), other points of extension are provided
+  void read_all_without_interrupts() {
+    action_before_read_all();
+    noInterrupts();             // latch and read all on the same batch
+    latch_all_read_imp_all();   // (it's not necessarily on the same latch,
+    interrupts();               // but at least without interruptions in the middle)
+    action_after_read_all();
   }
   /* gamepad::read is:
   virtual void read() {
@@ -74,16 +73,26 @@ struct multiplayer//: public gamepad_type
   }
   */
   
+  /// latch_all THEN read_all
+  /// if your protocol is too time sensitive or
+  /// it's architecture is different, override this
+  /// or other methods of multiplayer (virtual) interface
+  virtual void latch_all_read_imp_all() {
+    latch_all();  
+    read_imp_all();     
+  }
+
   /// PLEASE derive from this class and override these methods for each
-  /// multiplayer specific protocol (see SNES_multiplayer)
+  /// multiplayer specific protocol (see SNES_multiplayer)  
   virtual void latch_all() {
    for(uint8_t p = 0; p<players.size(); ++p)
     this->players.get(p)->latch();   
   }
-  virtual void read_all() {
+  virtual void read_imp_all() {
    for(uint8_t p = 0; p<players.size(); ++p)
-    this->players.get(p)->read();   
-  }
+    this->players.get(p)->read_imp();   
+  }  
+
 };
 
 }

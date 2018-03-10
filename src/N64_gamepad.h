@@ -3,6 +3,9 @@
 #ifndef _N64_GAMEPAD_H
 
 #include "bit_gamepad.h"
+#ifndef _GAMEPAD_SINGLEPLAYER
+#include "multiplayer.h" // for default this N64 interface is multiplayer compatible
+#endif
 
 namespace gamepad {
 
@@ -109,8 +112,12 @@ public:
   virtual String* get_button_names() const {
     return names;
   }
+  
+  uint8_t get_N64_pin() const {
+    return N64_pin;
+  }
 
-  void AndrewBrownInitialize(); // let's expose this, so user can play with protocol without messing with asm
+  void AndrewBrownInitialize(); // let's expose these, so user can play with protocol without messing with asm
   void AndrewBrownSend(unsigned char *buffer, char length);
   void AndrewBrownGet();
 
@@ -138,6 +145,11 @@ public:
       return y/float(analog_range.ymax);
     return -y/float(analog_range.ymin);
   }
+  
+#ifndef _GAMEPAD_SINGLEPLAYER
+  //friend struct N64_multiplayer;//todo
+  friend struct multiplayer<N64_gamepad>; // (for now) use directly this
+#endif
 
 protected:
   

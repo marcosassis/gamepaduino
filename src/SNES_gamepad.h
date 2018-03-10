@@ -2,7 +2,7 @@
 #define _SNES_GAMEPAD_H
 
 #include "bit_gamepad.h"
-#ifndef _GAMEPAD_SINGLEPLAYER
+#ifndef _GAMEPAD_SINGLEPLAYER // for default this SNES interface is multiplayer compatible
 #include "multiplayer.h"
 #endif
 
@@ -49,7 +49,7 @@ public:
 
 #ifndef _GAMEPAD_SINGLEPLAYER
   friend struct SNES_multiplayer;
-  friend struct multiplayer<SNES_gamepad>; // naiver
+  friend struct multiplayer<SNES_gamepad>; // don't use directly this
 #endif
   
 protected:

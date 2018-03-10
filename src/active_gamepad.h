@@ -18,7 +18,7 @@ struct active_gamepad: public gamepad_type {
   : gamepad_t(base)
   {}
 
-  /// and any action must be achieved 
+  /// and any action must be achieved for each button
   virtual void action_button_changed(uint8_t i) {} // you have to override this one or one of the others
 
   virtual void action_after_read() { // or even this one, maybe
