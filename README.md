@@ -33,6 +33,7 @@ metamero.tumblr.com
 ```
 [read multiple controllers on the fly]
 [with cool specialization/optimization for SNES multiplayer protocol]
+[as default implementation also is super lean, also N64 multiplayer is as fast as possible]
     optional, turn on by default, easy to turn off
     this module depends on: 'linked list library'
 ```
