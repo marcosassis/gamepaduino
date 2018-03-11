@@ -106,68 +106,78 @@ struct midi_send_interface
 {
   virtual void flush() = 0;
   
-  virtual void send       (status_byte data1,       data_byte data2,          data_byte data3     ) = 0;
-  ///                                  status                 data byte                 data byte
-  ///                                 [D7----D0]             [D7----D0]                [D7----D0]
-  /// 
+  ///                                       status                data byte              data byte
+  ///                                     [D7----D0]              [D7----D0]             [D7----D0]
+  virtual void send             ( status_byte data1,       data_byte data2,        data_byte data3 ) = 0;
+
   /// channel voice messages
   /// 
   ///   [nnnn:                0..15
   ///    MIDI channel number: 1..16]
-  ///                                 [    nnnn]             [        ]                [        ]
-  ///                                  1000nnnn               0kkkkkkk                  0vvvvvvv
-  virtual void note_off   (  channel_t  channel,    data_byte note_number,    data_byte velocity  )
+  ///                                     [    nnnn]              [        ]             [        ]
+  ///                                      1000nnnn                0kkkkkkk               0vvvvvvv
+  virtual void note_off         ( channel_t channel,  data_byte note_number,    data_byte velocity )
   {
     send( channel.assembly_status_byte(voice_message_t::note_off),
           note_number,  velocity );
   }
-  ///                                  1001nnnn               0kkkkkkk                  0vvvvvvv
-  virtual void note_on    (  channel_t  channel,    data_byte note_number,    data_byte velocity  )
+  ///                                      1001nnnn                0kkkkkkk               0vvvvvvv
+  virtual void note_on          ( channel_t channel,  data_byte note_number,    data_byte velocity )
   {
     send( channel.assembly_status_byte(voice_message_t::note_on),
           note_number,  velocity );
   }
-  ///                                  1110nnnn               0lllllll                  0mmmmmmm
-  virtual void pitch_bend (  channel_t  channel,    pitch_bend_t pb = pitch_bend_t::CENTER_PITCH  )
+  
+  /// coded values version                 1110nnnn                0lllllll               0mmmmmmm
+  virtual void pitch_bend       ( channel_t channel,     data_byte _lllllll,    data_byte _mmmmmmm )
   {
-    pitch_bend_coded_t pbc(pb.value);
     send( channel.assembly_status_byte(voice_message_t::pitch_bend),
-          pbc._lllllll,  pbc._mmmmmmm);
- }
+          _lllllll,  _mmmmmmm );
+  }
+  /// non-virtual helper                   1110nnnn                0lllllll               0mmmmmmm
+  void pitch_bend               ( channel_t channel,  pitch_bend_t pb = pitch_bend_t::CENTER_PITCH )
+  {
+    pitch_bend_coded_t  pbc(pb.value);
+    pitch_bend( channel,  pbc._lllllll,  pbc._mmmmmmm );
+  }
   
-  //  polyphonic_key pressure = B10100000, // aftertouch
-  //  control_change          = B10110000,
-  //  program_change          = B11000000,
-  //  channel_pressure        = B11010000, // aftertouch
-  //  pitch_bend              = B11100000
+  ///                                      1010nnnn                0lllllll               0vvvvvvv
+  virtual void polyphonic_key_pressure
+                                ( channel_t channel,  data_byte note_number,    data_byte press_val )
+  {
+    send( channel.assembly_status_byte(voice_message_t::polyphonic_key_pressure),
+          note_number,  press_val );
+  }
+  ///                                      1101nnnn                0vvvvvvv
+  virtual void channel_pressure ( channel_t channel,    data_byte press_val )
+  {
+    send( channel.assembly_status_byte(voice_message_t::channel_pressure),
+          press_val, 0 );
+  }
+  /// non-virtual aliases                  1010nnnn                0lllllll               0vvvvvvv
+  void aftertouch               ( channel_t channel,  data_byte note_number,   data_byte press_val )
+  {
+    polyphonic_key_pressure(channel,note_number,press_val);
+  }
+  /// non-virtual aliases                  1101nnnn                0vvvvvvv
+  void aftertouch               ( channel_t channel,    data_byte press_val )
+  {
+    channel_pressure(channel,press_val);
+  }
   
-  /// long todo list to implement
-  //virtual void program_change(data_byte program_number,                           channel_byte channel_0_15)  {}
-  //virtual void control_change(data_byte control_number, data_byte control_value,  channel_byte channel_0_15)  {}
-  //virtual void pitch_bend     (int inPitchValue,                                    channel_byte channel_0_15)  {}
-  //virtual void pitch_bend     (double inPitchValue,                                 channel_byte channel_0_15)  {}
-  //virtual void poly_pressure  (data_byte note_number, data_byte inPressure, channel_byte channel_0_15) __attribute__ ((deprecated)) {}
-  //virtual void after_touch    (                           data_byte pressure,       channel_byte channel_0_15)  {}
-  //virtual void after_touch    (data_byte note_number,     data_byte pressure,       channel_byte channel_0_15)  {}
-  //virtual void sys_ex         (unsigned inLength, const byte* inArray, bool inArrayContainsBoundaries = false)  {}
-  //virtual void sendTimeCodeQuarterFrame(data_byte inTypeNibble, data_byte inValuesNibble);
-  //virtual void sendTimeCodeQuarterFrame(data_byte inData);
-  //inline void sendSongPosition(unsigned inBeats);
-  //inline void sendSongSelect(data_byte inSongNumber);
-  //inline void sendTuneRequest();
-  //inline void sendRealTime(MidiType inType);
-  //inline void beginRpn(unsigned inNumber,        channel_byte channel_0_15);
-  //inline void sendRpnValue(unsigned inValue,            channel_byte channel_0_15);
-  //inline void sendRpnValue(byte inMsb,                       byte inLsb,                channel_byte channel_0_15);
-  //inline void sendRpnIncrement(byte inAmount,                     channel_byte channel_0_15);
-  //inline void sendRpnDecrement(byte inAmount,                      channel_byte channel_0_15);
-  //inline void endRpn(channel_byte channel_0_15);
-  //inline void beginNrpn(unsigned inNumber,                     channel_byte channel_0_15);
-  //inline void sendNrpnValue(unsigned inValue,                 channel_byte channel_0_15);
-  //inline void sendNrpnValue(byte inMsb,                 byte inLsb,              channel_byte channel_0_15);
-  //inline void sendNrpnIncrement(byte inAmount,                        channel_byte channel_0_15);
-  //inline void sendNrpnDecrement(byte inAmount,                           channel_byte channel_0_15);
-  //inline void endNrpn(channel_byte channel_0_15);
+  ///                                      1011nnnn                0ccccccc               0vvvvvvv
+  virtual void control_change   ( channel_t channel,  data_byte ctrl_number,  data_byte ctrl_value )
+  {
+    send( channel.assembly_status_byte(voice_message_t::control_change),
+          ctrl_number,  ctrl_value );
+  }
+
+  ///                                      1100nnnn                0ppppppp                  
+  virtual void program_change   ( channel_t channel,  data_byte new_program_number )
+  {
+    send( channel.assembly_status_byte(voice_message_t::program_change),
+          new_program_number,  0 );
+  }
 };
 
 }}
