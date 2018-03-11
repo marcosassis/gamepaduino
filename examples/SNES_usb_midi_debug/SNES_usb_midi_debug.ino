@@ -1,19 +1,20 @@
+#include "midi_luthier_proto.h"
 #include "midi_instrument.h"
 #include "midi_usb_interface.h"
-#include "SNES_gamepad.h"
+#include "N64_gamepad.h"
 using namespace gamepad;
+using namespace meta::midi::luthier;
 
-// any digital pin will work for this SNES gamepad interface
-const uint8_t CLOCK_PIN = 9;
-const uint8_t LATCH_PIN = 8;
-const uint8_t DATA_PIN1 = 7;
-const uint8_t DATA_PIN2 = 6;
+// available pins for N64 controller interface
+// on 'pro micro' (ATmega32U4): 2,3,4,6 [tested]
+const uint8_t N64_PIN1 = 2;
+const uint8_t N64_PIN2 = 3;
 
 // ID values: 1 to 4 (tested on pro micro (ATmega32U4))
-SNES_gamepad p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
-//SNES_gamepad p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
+N64_gamepad p1(1, N64_PIN1);
+N64_gamepad p2(2, N64_PIN2);
 
-//SNES_multiplayer multi(p1,p2);
+//N64_multiplayer multi(p1,p2);
 
 /*
 template<typename T>
@@ -24,23 +25,34 @@ T* count_up_to(T* init_this_array,  T up2) {
 }
 */
 
+//// N64 buttons ids
+////         0         1         2     3       4     5       6       7
+// enum bid {A,        B,        Z,    start,  Dup,  Ddown,  Dleft,  Dright,
+////         8         9         10    11      12    13      14      15
+//           reset,   unkown,    L,    R,      Cup,  Cdown,  Cleft,  Cright};
+
 /// midi interface prototype
 
 // this uses an 'interval map + tone' method for playing MIDI notes as buttons are pressed
-typedef   midi_instrument<SNES_gamepad>   SNES_midi;
+typedef midi_instrument<N64_gamepad>  N64_midi;
+
+// this pitch bends any midi_instrument passed as parameter (type and base object)
+typedef pitch_wheel<N64_midi>         N64_bender;
 
 // this is midi_interface implemented (only send for now) for MIDIUSB (library adapter)
-using     meta::midi::midi_usb_interface;
+using   meta::midi::midi_usb_interface;
 
-//// SNES buttons ids
-////        0  1  2       3      4   5     6     7      8  9  10 11
-//enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
-int8_t note_map[SNES_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,8,9,10,11};
+// initialize of everybody
+int8_t note_map[N64_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,8+24,9+24,10,11,12,13,14,15};
+midi_data_t                                      basetone=69; // A4
+midi_usb_interface            midiusb;
+N64_midi           p1midi(p1, midiusb, note_map, basetone,   1, 100);
+N64_bender         p1bender(p1midi);
 
-// initialize everybody
-midi_data_t                                       basetone=69; // A4
-midi_usb_interface             midiusb;
-SNES_midi           p1midi(p1, midiusb, note_map, basetone);
+N64_midi           p2midi(p2, midiusb, note_map, basetone+24, 2, 70);
+N64_bender         p2bender(p2midi);
+
+N64_multiplayer multi(p1bender,p2bender);
 
 void setup() {
   //Serial.begin(9600);
@@ -61,6 +73,8 @@ void loop() {
     Serial.println();
   }
   */
-  p1midi.read();
+  //p1midi.read();
+  //p1bender.read();
+  multi.read();
   midiusb.flush();
 }

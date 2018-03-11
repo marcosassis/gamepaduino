@@ -3,8 +3,11 @@
 #ifndef _N64_GAMEPAD_H
 
 #include "bit_gamepad.h"
-#ifndef _GAMEPAD_SINGLEPLAYER
+
+#ifndef _GAMEPAD_SINGLEPLAYER // if not single 
+#define _GAMEPAD_N64_MULTIPLAYER // then multi
 #include "multiplayer.h" // for default this N64 interface is multiplayer compatible
+// we have to friend multiplayer class instance, see below
 #endif
 
 namespace gamepad {

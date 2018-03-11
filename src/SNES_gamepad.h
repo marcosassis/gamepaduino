@@ -2,8 +2,11 @@
 #define _SNES_GAMEPAD_H
 
 #include "bit_gamepad.h"
-#ifndef _GAMEPAD_SINGLEPLAYER // for default this SNES interface is multiplayer compatible
-#include "multiplayer.h"
+
+#ifndef _GAMEPAD_SINGLEPLAYER // if not single 
+#define _GAMEPAD_SNES_MULTIPLAYER // then multi
+#include "multiplayer.h" // for default this SNES interface is multiplayer compatible
+// we have to friend multiplayer class instance and derivative, see below
 #endif
 
 namespace gamepad {
@@ -77,7 +80,6 @@ protected:
 // just define _GAMEPAD_SINGLEPLAYER before include this file
 // (if you want muliplayer, never mind, for default it will be compiled)
 #ifndef _GAMEPAD_SINGLEPLAYER
-#define _GAMEPAD_SNES_MULTIPLAYER
 
 //template<class gamepad_type>
 struct SNES_multiplayer: public multiplayer<SNES_gamepad>//<gamepad_type>
