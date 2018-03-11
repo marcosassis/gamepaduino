@@ -13,10 +13,6 @@ const uint8_t N64_PIN2 = 3;
 // ID values: 1 to 4 (tested on pro micro (ATmega32U4))
 N64_gamepad p1(1, N64_PIN1);
 //N64_hid p2(2, N64_PIN2);
-// tested [so far] up to 2 N64 gamepads simultaneously (same 32U4)
-// `-> more 2 SNES gamepads plugged on another pro micro on same PC
-//     `-> the IDs still had to be chosen different, even on 2 boards
-//         that is because we use these IDs to choose USB-HID IDs
 
 //N64_multiplayer multi(p1,p2);
 
@@ -29,27 +25,32 @@ T* count_up_to(T* init_this_array,  T up2) {
 }
 */
 
-// midi interface prototype
+//// N64 buttons ids
+////         0         1         2     3       4     5       6       7
+// enum bid {A,        B,        Z,    start,  Dup,  Ddown,  Dleft,  Dright,
+////         8         9         10    11      12    13      14      15
+//           reset,   unkown,    L,    R,      Cup,  Cdown,  Cleft,  Cright};
 
+/// midi interface prototype
+
+// this uses an 'interval map + tone' method for playing MIDI notes as buttons are pressed
 typedef midi_instrument<N64_gamepad>  N64_midi;
-typedef pitch_wheel<N64_midi>         N64_bender;        
+
+// this pitch bends any midi_instrument passed as parameter (type and base object)
+typedef pitch_wheel<N64_midi>         N64_bender;
+
+// this is midi_interface implemented (only send for now) for MIDIUSB (library adapter)
 using   meta::midi::midi_usb_interface;
 
-/*
-  //        0         1         2     3       4     5       6       7
-  enum bid {A,        B,        Z,    start,  Dup,  Ddown,  Dleft,  Dright,
-  //        8         9         10    11      12    13      14      15
-            reset,   unkown,    L,    R,      Cup,  Cdown,  Cleft,  Cright};
-*/
+// initialize of everybody
 int8_t note_map[N64_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,16,9,10,11,12,13,14,15};
 midi_data_t                                      basetone=69; // A4
 midi_usb_interface            midiusb;
 N64_midi           p1midi(p1, midiusb, note_map, basetone);
 N64_bender         p1bender(p1midi);
 
-
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void loop() {

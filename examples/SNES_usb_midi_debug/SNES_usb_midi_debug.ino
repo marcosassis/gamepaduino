@@ -12,7 +12,6 @@ const uint8_t DATA_PIN2 = 6;
 // ID values: 1 to 4 (tested on pro micro (ATmega32U4))
 SNES_gamepad p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
 //SNES_gamepad p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
-// tested [so far] up to 4 SNES gamepads simultaneously (same 32U4)
 
 //SNES_multiplayer multi(p1,p2);
 
@@ -25,21 +24,26 @@ T* count_up_to(T* init_this_array,  T up2) {
 }
 */
 
-// midi interface prototype
+/// midi interface prototype
 
+// this uses an 'interval map + tone' method for playing MIDI notes as buttons are pressed
 typedef   midi_instrument<SNES_gamepad>   SNES_midi;
+
+// this is midi_interface implemented (only send for now) for MIDIUSB (library adapter)
 using     meta::midi::midi_usb_interface;
 
-midi_usb_interface  midiusb;
-//          0  1  2       3      4   5     6     7      8  9  10 11
+//// SNES buttons ids
+////        0  1  2       3      4   5     6     7      8  9  10 11
 //enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
-SNES_midi::note_t   note_map[SNES_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,8,9,10,11};
-midi_data_t         basetone=69; // A4
+int8_t note_map[SNES_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,8,9,10,11};
+
+// initialize of everybody
+midi_data_t                                       basetone=69; // A4
+midi_usb_interface             midiusb;
 SNES_midi           p1midi(p1, midiusb, note_map, basetone);
 
-
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void loop() {
