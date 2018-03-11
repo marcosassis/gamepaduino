@@ -37,7 +37,7 @@ using     meta::midi::midi_usb_interface;
 //enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
 int8_t note_map[SNES_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,8,9,10,11};
 
-// initialize of everybody
+// initialize everybody
 midi_data_t                                       basetone=69; // A4
 midi_usb_interface             midiusb;
 SNES_midi           p1midi(p1, midiusb, note_map, basetone);
