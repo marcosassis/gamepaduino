@@ -10,14 +10,18 @@ struct midi_instrument: public gamepad_midi<gamepad_type>
 {
   typedef gamepad_midi<gamepad_type>  gamepad_midi_base;
   typedef gamepad_type                gamepad_t;
-  
-  typedef  int8_t                 note_t; // todo: generalize in midi interface
+  typedef int8_t                      note_t; // todo: generalize note_t in midi interface
   
   static const note_t DONT_PLAY = -128;
   note_t* interval_map; // size == gamepad_t.get_n_buttons();
   midi_data_t tone;
   midi_data_t channel;
   midi_data_t velocity;
+  
+  //midi_instrument(midi_instrument& other)
+  //: midi_instrument(other, other.midi_interface(),
+  //                  other.interval_map, other.tone, other.channel, other.velocity)
+  //{}
   
   midi_instrument(gamepad_t& base,  midi_send_interface& _midi_instance,
                   note_t interval_map[],  midi_data_t tone,  midi_data_t channel=0,  midi_data_t velocity=100)

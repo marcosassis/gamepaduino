@@ -14,7 +14,7 @@ namespace gamepad {
 
   available pins 
 
-  arduino 
+arduino 
 
   available pins: 0,1,2,3,4,5,6,7
   (in general arduino boards, digital pins 0..7 correspond to PD bits 0..7)
@@ -30,7 +30,7 @@ namespace gamepad {
                      PD6   Digital pin 6
                      PD7   Digital pin 7
 
-  pro micro [ATmega32U4]
+pro micro [ATmega32U4]
 
   available pins: 2,3,4,6
 
@@ -41,7 +41,7 @@ namespace gamepad {
   (RX D1/AIN1/INT2)  PD2   Digital pin 0 (RX) // nop
   (TXD1/INT3)        PD3   Digital pin 1 (TX) // no 
     (please don't use TX/RX on pro micro, I think you'd have to
-    flash with an external programmer if this messes up)
+    flash with an external programmer if this messes up. todo: confirm on datasheet)
   (ICP1/ADC8)        PD4   Digital pin 4
   (XCK1/#CTS)        PD5   TXLED
   (T1/#OC4D/ADC9)    PD6   Digital pin 12 // ??? unavailable on board

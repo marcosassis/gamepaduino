@@ -27,8 +27,8 @@ typedef meta::midi::midi_send_interface   midi_send_interface;
 template<class gamepad_type>
 struct gamepad_midi: public active_gamepad<gamepad_type>
 {
-  typedef gamepad_type                      gamepad_t; // base's base, actually the gamepad
-  typedef active_gamepad<gamepad_type>      gamepad_base; // active_gamepad is a "shell", this is another
+  typedef gamepad_type                  gamepad_t; // base's base, actually the gamepad
+  typedef active_gamepad<gamepad_type>  gamepad_base; // active_gamepad is a "shell", this is another
   
   midi_send_interface& _midi_;
 
@@ -50,8 +50,10 @@ struct gamepad_midi: public active_gamepad<gamepad_type>
     
   virtual void read() {
     gamepad_base::read();
-    //flush();
+    //flush(); //todo study this
   }
+  
+  virtual void action_button_changed(uint8_t i) = 0; // hey, yes, we're abstracting again
 };
 
 }
