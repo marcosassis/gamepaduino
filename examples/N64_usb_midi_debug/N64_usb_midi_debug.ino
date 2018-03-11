@@ -41,9 +41,9 @@ using   meta::midi::midi_usb_interface;
   //        8         9         10    11      12    13      14      15
             reset,   unkown,    L,    R,      Cup,  Cdown,  Cleft,  Cright};
 */
-midi_usb_interface            midiusb;
-N64_midi::note_t   note_map[N64_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,16,9,10,11,12,13,14,15};
+int8_t note_map[N64_gamepad::N_BUTTONS]={0,1,2,3,4,5,6,7,16,9,10,11,12,13,14,15};
 midi_data_t                                      basetone=69; // A4
+midi_usb_interface            midiusb;
 N64_midi           p1midi(p1, midiusb, note_map, basetone);
 N64_bender         p1bender(p1midi);
 

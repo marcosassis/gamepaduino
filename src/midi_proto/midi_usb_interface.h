@@ -17,7 +17,7 @@ struct midi_usb_interface: public midi_send_interface
   midi_event_packet_t event;
   
   virtual void send(status_byte data1, data_byte data2, data_byte data3) {
-     event = { voice_message_t(data1).midi_event_type(), // todo: generic for all different status (not only voice m.)
+    event = { voice_message_t(data1).midi_event_type(), // todo: generic for all different status (not only voice m.)
               data1, data2, data3 };
     MidiUSB.sendMIDI(event.midiusb_event);
   }
