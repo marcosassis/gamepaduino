@@ -98,6 +98,7 @@ union pitch_bend_t {
   : value (value)
   {}
 };
+  
 
 
 /// https://www.midi.org/specifications/item/table-1-summary-of-midi-message
@@ -133,7 +134,7 @@ struct midi_send_interface
     send( channel.assembly_status_byte(voice_message_t::pitch_bend),
           _lllllll,  _mmmmmmm );
   }
-  /// non-virtual helper                   1110nnnn                this version is easy, non coded
+  /// non-virtual helper                   1110nnnn                0lllllll               0mmmmmmm
   void pitch_bend               ( channel_t channel,  pitch_bend_t pb = pitch_bend_t::CENTER_PITCH )
   {
     pitch_bend_coded_t  pbc(pb.value);

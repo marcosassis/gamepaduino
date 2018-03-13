@@ -7,8 +7,11 @@ namespace gamepad {
   
 /// subset is not gamepad
 /// but is almost, it's parent can be a gamepad(or not)
-/// so a subset does nothing per se, except mapping
+/// so a subset does nothing 'per se', except mapping
 /// one set of (button)IDs onto another
+///
+/// directional is the most eminent ex. of subset
+/// 
 class subset: public buttonset
 {
 protected:

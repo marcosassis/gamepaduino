@@ -3,11 +3,20 @@
 
 #include "Arduino.h"
 
+#ifdef USBCON
+typedef Serial_         DefaultHardwareSerial;
+#else
+typedef HardwareSerial  DefaultHardwareSerial;
+#endif
+
+
 namespace gamepad {
+
 
 /// helper function, linear search in an array
 template<class Type=String>
-int get_id_by_name(Type aname, Type* names, unsigned max_names) {
+int get_id_by_name(Type aname, Type* names, unsigned max_names)
+{
   int ret = -1;
   for (unsigned i = 0; i < max_names; ++i) {
     if (names[i] == aname) {
@@ -18,9 +27,10 @@ int get_id_by_name(Type aname, Type* names, unsigned max_names) {
   return ret;
 }
 
+
 /// this abstract class is helper for gamepad (abstract class) interface
 /// this is also derived from subset, which is not gamepad,
-/// but they have things in common
+/// but they have things in common (directional is the most eminent ex. of subset)
 class buttonset
 {
 protected:
@@ -52,17 +62,57 @@ public:
     return n_buttons;
   }
 
-  virtual int get_button_id_by_name(String aname) const {
+  int get_button_id_by_name(String aname) const {
     return get_id_by_name(aname, get_button_names(), n_buttons);
   }
 
-  virtual void print() {
-    for(uint8_t i=0; i<n_buttons; ++i) {
-      Serial.print(get_button_names()[i]); Serial.print(":\t"); Serial.println(get_button_state(i));
+  /**
+    verbose:
+    0: print buttonset buttons as bits
+    1: same as before, but with spaces between bytes
+    2: print all '{ button_name: button_state, ... }'
+    3: print all 'button_name:\t\tbutton_state\n'
+  */
+  template<class SerialType=DefaultHardwareSerial>
+  void print(int verbose=0, SerialType& theSerialPrinter = Serial) const;
+  
+};
+
+
+template<class SerialType>
+void buttonset::print(int verbose, SerialType& theSerialPrinter) const
+{
+  uint8_t nb = get_n_buttons();
+  if(verbose>=3) {
+    for(uint8_t i=0; i<nb; ++i) {
+      theSerialPrinter.print(get_button_names()[i]);
+      theSerialPrinter.print(":\t\t");
+      theSerialPrinter.print(get_button_state(i));
+      theSerialPrinter.print("\n");
+    }  
+  }
+  else if(verbose>=2) {
+    theSerialPrinter.print("{");
+    for(uint8_t i=0; i<nb; ++i) {
+      theSerialPrinter.print(" ");
+      theSerialPrinter.print(get_button_names()[i]);
+      theSerialPrinter.print(": ");
+      theSerialPrinter.print(get_button_state(i));
+      if(i==nb-1)
+        theSerialPrinter.print(" ");
+      else
+        theSerialPrinter.print(", ");
+    }
+    theSerialPrinter.print("}");
+  }
+  else {
+    for(uint8_t i=0; i<nb; ++i) {
+      if(verbose>=1 && (i%8)==0 && i!=0)
+        theSerialPrinter.print(" ");
+      theSerialPrinter.print(get_button_state(i));
     }
   }
-
-};
+}
 
 }
 #endif //_BUTTONSET_H
