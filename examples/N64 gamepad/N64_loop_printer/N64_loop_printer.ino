@@ -1,35 +1,35 @@
-// #include "SNES_gamepad_usb.h" // if your board is USB enabled you can test this
-#include "SNES_gamepad.h"
+// #define _GAMEPAD_SINGLEPLAYER // before include // if you din't install LinkedList yet, define this
+// #include "N64_gamepad_usb.h" // if your board is USB enabled you can test this
+#include "N64_gamepad.h"
 // this defines multiplayer and gamepad interfaces/classes
-// and implementation for SNES gamepad protocol
+// and implementation for N64 gamepad protocol
 
 // using gamepad;
 // using gamepad::SNES_gamepad;
 // using gamepad::SNES_multiplayer;
 
-const uint8_t CLOCK_PIN = 9;
-const uint8_t LATCH_PIN = 8;
-const uint8_t DATA_PIN1 = 7;
-const uint8_t DATA_PIN2 = 6;
-// any digital pin will work for this SNES gamepad interface
-// tested so far up to 4 gamepads simultaneously
+// available pins for N64 controller interface
+// on 'pro micro' (ATmega32U4): 2,3,4,6 [tested]
+// on general arduino boards: 0,1,2,3,4,5,6,7
+const uint8_t N64_PIN1 = 2;
+const uint8_t N64_PIN2 = 3;
 
-// if your board is USB enabled you can test these // print AND joystick USB HID
-//SNES_hid p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
-//SNES_hid p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
+// if your board is USB enabled you can test these // print and loop AND (OO) joystick USB HID
+//N64_hid p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
+//N64_hid p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
 // available IDs are 1..4 [for USB HID]
 
-gamepad::SNES_gamepad p1(1, DATA_PIN1, CLOCK_PIN, LATCH_PIN);
-gamepad::SNES_gamepad p2(2, DATA_PIN2, CLOCK_PIN, LATCH_PIN);
+gamepad::N64_gamepad p1(1, N64_PIN1);
+gamepad::N64_gamepad p2(2, N64_PIN2);
 // [available IDs are any [general]
 
-gamepad::SNES_multiplayer multi(p1, p2); // just comment p2 and multiplayer stuff you are singleplayer
+gamepad::N64_multiplayer multi(p1, p2); // just comment p2 and multiplayer stuff you are singleplayer
 
 void setup() {
   Serial.begin(9600);
 }
 
-const int VERBOSE_LEVEL = 3;
+const int VERBOSE_LEVEL = 1;
   /**
     verbose:
     0: print buttonset buttons as bits

@@ -6,7 +6,7 @@ using gamepad::SNES_hid;
 
 #ifdef _GAMEPAD_SNES_MULTIPLAYER
 using gamepad::SNES_multiplayer;
-//typedef gamepad::multiplayer<SNES_*> SNES_multiplayer; == naïve
+// this is custom optimization for SNES multiplayer protocol, see SNES_gamepad.h
 #endif
 
 // ok, now thats very easy

@@ -3,9 +3,12 @@
 
 #include "bit_gamepad.h"
 
-#ifndef _GAMEPAD_SINGLEPLAYER // if not single 
-#define _GAMEPAD_SNES_MULTIPLAYER // then multi
-#include "multiplayer.h" // for default this SNES interface is multiplayer compatible
+#if !defined(_GAMEPAD_SINGLEPLAYER) && !defined(_GAMEPAD_SNES_SINGLEPLAYER)
+//if not single 
+#define _GAMEPAD_SNES_MULTIPLAYER
+// then multi
+#include "multiplayer.h"
+// for default this SNES interface is multiplayer compatible
 // we have to friend multiplayer class instance and derivative, see below
 #endif
 
@@ -23,7 +26,21 @@ protected:
 
   virtual void latch();
   virtual void read_imp();
-
+  
+  uint8_t get_latch_pin() const {
+    return latch_pin;
+  }
+  uint8_t get_clock_pin() const {
+    return clock_pin;
+  }
+  uint8_t get_data_pin() const {
+    return data_pin;
+  }
+  
+  virtual void read_bit(uint8_t i) {
+    buttons |= (digitalRead(data_pin) << i);
+  }
+  
 public:
 
   typedef bit_gamepad<uint16_t> gamepad_base;
@@ -53,26 +70,11 @@ public:
     return names;
   }
   
-  uint8_t get_latch_pin() const {
-    return latch_pin;
-  }
-  uint8_t get_clock_pin() const {
-    return clock_pin;
-  }
-  uint8_t get_data_pin() const {
-    return data_pin;
-  }
-  
-#ifndef _GAMEPAD_SINGLEPLAYER
+#ifdef _GAMEPAD_SNES_MULTIPLAYER
   friend struct SNES_multiplayer;/// use this if you want multiple SNES controllers support
   friend struct multiplayer<SNES_gamepad>; /// don't use directly this
 #endif
-  
-protected:
-  
-  virtual void read_bit(uint8_t i) {
-    buttons |= (digitalRead(data_pin) << i);
-  }
+
 };
 
 

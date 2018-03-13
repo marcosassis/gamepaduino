@@ -4,10 +4,13 @@
 
 #include "bit_gamepad.h"
 
-#ifndef _GAMEPAD_SINGLEPLAYER // if not single 
-#define _GAMEPAD_N64_MULTIPLAYER // then multi
-#include "multiplayer.h" // for default this N64 interface is multiplayer compatible
-// we have to friend multiplayer class instance, see below
+#if (!defined(_GAMEPAD_SINGLEPLAYER)) && (!defined(_GAMEPAD_N64_SINGLEPLAYER))
+//if not single 
+#define _GAMEPAD_N64_MULTIPLAYER
+// then multi
+#include "multiplayer.h"
+// for default this N64 interface is multiplayer compatible
+// we have to friend this multiplayer class instance, see below
 #endif
 
 namespace gamepad {
@@ -152,8 +155,10 @@ public:
     return -y/float(analog_range.ymin);
   }
   
-#ifndef _GAMEPAD_SINGLEPLAYER
-  /// each N64_gamepad has it's own single bidirectional communication/data pin, default behavior is optimal
+#ifdef _GAMEPAD_N64_MULTIPLAYER
+  /// each N64_gamepad has it's own single bidirectional communication/data pin
+  /// (and arduino is far from fast enough to read all in parallel), so
+  /// default behavior is optimal
   friend struct multiplayer<N64_gamepad>; // see multiplayer.h
 #endif
 
@@ -201,6 +206,11 @@ protected:
     }
   }
 };
+
+/// NO custom imp. for N64 multiplayer interface, default is already optimal, see multiplayer.h
+#ifdef _GAMEPAD_N64_MULTIPLAYER
+typedef multiplayer<N64_gamepad>  N64_multiplayer;
+#endif
 
 }
 #endif // _N64_GAMEPAD_H

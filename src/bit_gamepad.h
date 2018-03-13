@@ -10,10 +10,10 @@ namespace gamepad {
 template<typename Type, class SerialType=DefaultHardwareSerial>
 void print_bits(Type var, int verbose=0, SerialType& theSerialPrinter = Serial) {
   bool bit;
-  for(uint8_t i=(sizeof(Type)*8)-1; i>=0; --i) {
-    
-    //if(verbose>0 && (i%4)==0 && i!=0)
-      //theSerialPrinter.print(" ");
+  
+  for(int i=(sizeof(Type)*8)-1; i>=0; --i) {
+    if(verbose>0 && (i%8)==0 && i!=0)
+      theSerialPrinter.print(" ");
 
     bit = var & (Type(1) << i);
     theSerialPrinter.print(unsigned(bit));    
@@ -86,11 +86,11 @@ public:
   
   template<class SerialType=DefaultHardwareSerial>
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const {
-    //if(verbose>1)
+    if(verbose>1)
       gamepad::print(verbose, theSerialPrinter);
-    //else
+    else
       //Serial.println("!");
-      //print_bits(verbose, theSerialPrinter);
+      print_bits(buttons, verbose, theSerialPrinter);
   }
   
 };
