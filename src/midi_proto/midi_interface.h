@@ -50,7 +50,8 @@ union channel_t {
     MIDI_channel_12,
     MIDI_channel_13,
     MIDI_channel_14,
-    MIDI_channel_15
+    MIDI_channel_15,
+    MIDI_channel_16
   };
   
   /// convert from data_byte mask out first 4 bits

@@ -16,6 +16,7 @@ IMPORTANT: all concrete classes should
                       static const uint8_t N_BUTTONS = *;    // 2
                       static const String names[N_BUTTONS];  // 3
                       enum bid {*, *, ..., *};               // 4
+                      enum did {*, ... };                    // 5
                   
 *(think it's ok to allow copied objects share buffers,
   since it's same player/controller anyway. todo: study this on N64)
@@ -50,13 +51,23 @@ examples from SNES_gamepad.h
         //        0  1  2       3      4   5     6     7      8  9  10 11
         enum bid {B, Y, select, start, up, down, left, right, A, X, L, R};
         
-        
-so **bid** is: button id
-
-the same way we'll use, when makes sense:
+5:  as directional pad is almost universal, this interface is done in gamepad class
+    even if your gamepad has just 1 dpad, define this:
+        enum did { dpad }; // (templates functions will love it)
     
-    **did** is: directional pad (dpad) id
-    **aid** is: analog id (analog can be multi-axes: todo)
+    
+so:
+    **bid** are: button ids
+    **did** are: directional pad (dpad) ids
+    
+    // for a specific gamepad, i.e. concrete class
+
+the same way we'll use, when it makes sense:
+    
+    **aid** is: analog id (analog can be multi-axes)
+    
+for analog capable devices, we have a "shell" class `has_analogs` that defines
+this interface (see analog.h)
 
 please follow these names and conventions for consistency
 

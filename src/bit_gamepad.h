@@ -21,7 +21,7 @@ void print_bits(Type var, int verbose=0, SerialType& theSerialPrinter = Serial) 
 }
 
 
-/// bit representation for gamepads that use it
+/// bitmap representation for gamepads that use it
 template<typename uint_type>
 class bit_gamepad: public gamepad
 {

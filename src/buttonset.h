@@ -62,6 +62,7 @@ public:
     return n_buttons;
   }
 
+  /// consider using concrete_classes::bid (if context allows it (statically))
   int get_button_id_by_name(String aname) const {
     return get_id_by_name(aname, get_button_names(), n_buttons);
   }
