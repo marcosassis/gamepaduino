@@ -22,9 +22,11 @@ void print_bits(Type var, int verbose=0, SerialType& theSerialPrinter = Serial) 
 
 
 /// bitmap representation for gamepads that use it
-template<typename uint_type>
-class bit_gamepad: public gamepad
+template<typename uint_Type>
+struct bit_gamepad: public gamepad
 {
+  typedef uint_Type uint_type;
+  
 protected:
   uint_type buttons = 0; // each bit is a button, positive logic
   uint_type buttons_last = 0;
@@ -70,10 +72,14 @@ public:
     return buttons_changed_mask() & (uint_t(1) << index);
   }
 
-  uint_type get_buttons() { // each bit is a button, positive logic
+  /// each bit is a button, positive logic
+  uint_type get_buttons() const {
     return buttons;
   }
-  uint_type get_buttons_last() {
+  void set_buttons(uint_type bu) {
+    buttons = bu;
+  }
+  uint_type get_buttons_last() const {
     return buttons_last;
   }
   

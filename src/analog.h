@@ -16,19 +16,13 @@ struct analog_abstract {
   
   STATIC_CHECK(N_AXES>=1);
   
-protected:
-  virtual& value_type  get(uint8_t i)                const = 0;
-public:
+  
   virtual  value_type  get(uint8_t i)                const = 0;
   virtual  void        set(uint8_t i, value_type v)        = 0;
 
-  /// operators and specific names
-  /// [get_y and get_z only compile when N_AXES corresponds]
+  /// operator and specific names
   /// all inline, so they're just aliases
   value_type operator[](uint8_t i) const {
-    return get(i);
-  }
-  value_type& operator[](uint8_t i) {
     return get(i);
   }
 
@@ -36,16 +30,17 @@ public:
     return get(0);
   }
   void set_x(value_type x) {
-    return get(0)=x;
+    return set(0,x);
   }
   
+  /// [get_y and get_z only compile when N_AXES corresponds]
   value_type get_y() const {
     STATIC_CHECK(N_AXES>=2);
     return get(1);
   }
   void set_y(value_type y) {
     STATIC_CHECK(N_AXES>=2);
-    return get(1)=y;
+    return set(1,y);
   }
   
   value_type get_z() const {
@@ -54,7 +49,7 @@ public:
   }
   void set_z(value_type z) {
     STATIC_CHECK(N_AXES>=3);
-    return get(2)]=z;
+    return set(2,z);
   }
 };
 
@@ -70,7 +65,7 @@ public:
     and you must use references/pointers to analog_abstract when dealing
     directly with analog entities
     
-    (see bit_analog.h)
+    (see bit_analog.h) (this class is also used to transition values to bit_analog)
  */
 template<typename value_type, uint8_t Dimensions=2>
 struct analog_t: public analog_abstract<value_type,Dimensions> {
@@ -80,8 +75,8 @@ struct analog_t: public analog_abstract<value_type,Dimensions> {
   static const uint8_t N_AXES = Dimensions;
   /// values statically [const sized array] stored
   value_type values[N_AXES];
-    
-  STATIC_CHECK(N_AXES>=1);
+  
+  analog_t(value_type values[]): values(values) {}
   
   /// i don't think we can afford to check index range every time, so user must be conscious
   virtual value_type get(uint8_t i) const {
@@ -99,7 +94,7 @@ struct analog_t: public analog_abstract<value_type,Dimensions> {
     this does not stores analogs, it's abstract by get_analog/set_analog
     
         if your class needs to store separate values/members for analogs, use
-        analog_t for each analog stick or whatever your gamepad has
+        analog_t for each analog stick (or whatever) your gamepad has
         
         if your class/protocol represents analogs values together with buttons
         values, let's say in specific bits of an integer (for buttons, or
@@ -122,21 +117,21 @@ struct has_analogs: public ButtonSetType {
     return get_analog(ai).get(0);
   }
   void set_x(value_type x, uint8_t ai=0) {
-    return get_analog(ai).get(0)=x;
+    return get_analog(ai).set(0,x);
   }
   
   value_type get_y(uint8_t ai=0) const {
     return get_analog(ai).get(1);
   }
   void set_y(value_type y, uint8_t ai=0) {
-    return get_analog(ai).get(1)=y;
+    return get_analog(ai).set(1,y);
   }
   
   value_type get_z(uint8_t ai=0) const {
     return get_analog(ai).get(2);
   }
   void set_z(value_type z, uint8_t ai=0) {
-    return get_analog(ai).get(2)]=z;
+    return get_analog(ai).set(2,z);
   }
   
   // ** enum your 'aid' [see gamepad.h] **
