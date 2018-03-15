@@ -2,7 +2,7 @@
 
 #ifndef _N64_GAMEPAD_H
 
-#include "bit_gamepad.h"
+#include "bit_analog.h"
 
 #if (!defined(_GAMEPAD_SINGLEPLAYER)) && (!defined(_GAMEPAD_N64_SINGLEPLAYER))
 //if not single 
@@ -14,6 +14,10 @@
 #endif
 
 namespace gamepad {
+
+///                               32 bits   axis_t  x bit mask      y bit mask 
+typedef bit_analog_mask_traits_2D<uint32_t, int8_t, 0x00FF0000, 16, 0xFF000000, 24>
+    N64_analog_mask_traits;
 
 //! command and read a N64 controller
 /*!
@@ -67,9 +71,12 @@ pro micro [ATmega32U4]
     _BV(6), // D12 - PD6 // ??? unavailable on board
     ...
  */
-struct N64_gamepad: public bit_gamepad<uint32_t>
+struct N64_gamepad
+: public bit_gamepad<uint32_t>, public has_bitmask_analogs<N64_analog_mask_traits>
 {
-  typedef bit_gamepad<uint32_t> gamepad_base;
+  typedef bit_gamepad<uint32_t>                       gamepad_base;
+  typedef has_bitmask_analogs<N64_analog_mask_traits> has_analogs_base;
+  typedef has_analogs_base::bit_analog_type           analog_type;
   
   // number, names and ids of buttons, as demanded by gamepad interface
   static const uint8_t N_BUTTONS = 16;
@@ -86,18 +93,11 @@ struct N64_gamepad: public bit_gamepad<uint32_t>
   // number and ids of directional pads, for consistency
   static const uint8_t N_DPADS = 2;
   enum did { Dpad, Cpad };
-  
-  // todo: generalize analog interface in gamepad class
-  int8_t get_x() {
-    return buttons >> uint_t(16);
-  }
-  int8_t get_y() { // the ideia is that directionals and analog axis/valued controls are ubiquitous
-    return buttons >> uint_t(24); // and *general* concepts of gamepad devices
-  }
 
 protected:
 
-  directional dpads[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
+  directional dpads_[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
+  analog_type analogs_[2] = {analog_type(*this), analog_type(*this)};
   char raw_dump[33];        /// 1 received bit per byte // why 33??
   uint8_t N64_pin_bit_mask; /// memory(1) vs time(1*N)
   uint8_t N64_pin;          /// arduino pin (not AVR PD)
@@ -111,7 +111,9 @@ public:
 
   /// main constructor
   N64_gamepad(uint8_t id, uint8_t N64_pin=3, bool init=true)
-  : gamepad_base(id, N_BUTTONS, dpads, N_DPADS), N64_pin(N64_pin),
+  : gamepad_base(id, N_BUTTONS, dpads_, N_DPADS),
+    has_analogs_base(analogs_),
+    N64_pin(N64_pin),
     N64_pin_bit_mask(digitalPinToBitMask(N64_pin))
   {
     if(init)  AndrewBrownInitialize();

@@ -2,23 +2,28 @@
 #define _GAMEPAD_ANALOG_H
 
 //#include "buttonset.h"
-#include "Loki/static_check.h" // thank you, a.alexandrescu!
 
 namespace gamepad {
 
 /// everything that is not binary is called analog [in this gamepad context]
 template<typename value_type, uint8_t Dimensions=2>
-struct analog_abstract {
+struct analog_abstract
+{
   /// representation type for each dimension/axis of a analog value
   typedef value_type value_t;
+  
   /// multiaxis (or just 1), default is (x,y)
   static const uint8_t N_AXES = Dimensions;
   
-  STATIC_CHECK(N_AXES>=1);
+  static_assert(N_AXES>=1, "number of axis bust be positive");
   
+  virtual  value_type   get(uint8_t i)                const = 0;
+  virtual  void         set(uint8_t i, value_type v)        = 0;
   
-  virtual  value_type  get(uint8_t i)                const = 0;
-  virtual  void        set(uint8_t i, value_type v)        = 0;
+  virtual  void copy (const analog_abstract& other) {
+    for(uint8_t ii=0; ii<N_AXES; ++ii)
+      set(ii, other.get(ii));
+  }
 
   /// operator and specific names
   /// all inline, so they're just aliases
@@ -35,20 +40,20 @@ struct analog_abstract {
   
   /// [get_y and get_z only compile when N_AXES corresponds]
   value_type get_y() const {
-    STATIC_CHECK(N_AXES>=2);
+    static_assert(N_AXES>=2, "get_y is not available for class instances with 1 dimension");
     return get(1);
   }
   void set_y(value_type y) {
-    STATIC_CHECK(N_AXES>=2);
+    static_assert(N_AXES>=2, "set_y is not available for class instances with 1 dimension");
     return set(1,y);
   }
   
   value_type get_z() const {
-    STATIC_CHECK(N_AXES>=3);
+    static_assert(N_AXES>=3, "get_z is not available for class instances with N_AXES<3");
     return get(2);
   }
   void set_z(value_type z) {
-    STATIC_CHECK(N_AXES>=3);
+    static_assert(N_AXES>=3, "set_z is not available for class instances with N_AXES<3");
     return set(2,z);
   }
 };
@@ -68,22 +73,27 @@ struct analog_abstract {
     (see bit_analog.h) (this class is also used to transition values to bit_analog)
  */
 template<typename value_type, uint8_t Dimensions=2>
-struct analog_t: public analog_abstract<value_type,Dimensions> {
+struct analog_t: public analog_abstract<value_type,Dimensions>
+{
   /// representation type for each dimension/axis of a analog value
-  typedef value_type value_t;
+  typedef value_type axis_value_type;
+
   /// multiaxis (or just 1), default is (x,y)
   static const uint8_t N_AXES = Dimensions;
-  /// values statically [const sized array] stored
-  value_type values[N_AXES];
   
-  analog_t(value_type values[]): values(values) {}
+  /// values statically [const sized array] stored
+  axis_value_type values[N_AXES];
+
+  typedef analog_abstract<value_type,N_AXES> analog_abstract_type;
+    
+  analog_t(axis_value_type values[]): values(values) {}
   
   /// i don't think we can afford to check index range every time, so user must be conscious
-  virtual value_type get(uint8_t i) const {
+  virtual axis_value_type get(uint8_t i) const {
     return values[i];
   }
-  virtual void set(uint8_t i, value_type v) {
-    return values[i]=v;
+  virtual void set(uint8_t i, axis_value_type v) {
+    values[i]=v;
   }
 };
 
@@ -111,57 +121,55 @@ struct analog_t: public analog_abstract<value_type,Dimensions> {
             (see also bit_analog.h)
           
  */
-template<class ButtonSetType, typename AnalogType, uint8_t NUMBEROF_ANALOGS=1> 
-struct has_analogs: public ButtonSetType
+template<typename AnalogType, uint8_t NUMBEROF_ANALOGS=1> 
+struct has_analogs
 {
-  typedef ButtonSetType button_set_base;
-  typedef AnalogType    analog_type;
-  typedef typename analog_type::value_type  value_type;
+  typedef AnalogType                              analog_type;
+  typedef typename analog_type::axis_value_type   axis_value_type;
   
   static const uint8_t N_ANALOGS = NUMBEROF_ANALOGS;
-  STATIC_CHECK(NUMBEROF_ANALOGS>=1);
+  static_assert(NUMBEROF_ANALOGS>=1, "if this class has_analogs, it have to have");
   
 protected:
   analog_type* analogs;
   
 public:
 
-  has_analogs(const button_set_base& base, analog_type* analogs)
-  : buttonset(base), analogs(analogs)
+  has_analogs(analog_type* instancedanalogs)
+  : analogs(instancedanalogs)
   {}
-
-  virtual const analog_abstract& get_analog(uint8_t ai=0) const
+  virtual const analog_type& get_analog(uint8_t i=0) const
   {
-    if(analogs && i<N_ANALOGS)
-      return analogs+i;
+    if(i<N_ANALOGS)
+      return analogs[i];
 
-    return analogs;
+    return analogs[0];
   }
   virtual void set_analog(analog_type& newanalog, uint8_t i=0)
   {
-    if(analogs && i<N_ANALOG)
-      analogs[i] = newanalog;
+    if(i<N_ANALOGS)
+      analogs[i].copy(newanalog);
   }
 
-  value_type get_x(uint8_t ai=0) const {
-    return get_analog(ai).get(0);
+  axis_value_type get_x(uint8_t ai=0) const {
+    return get_analog(ai).get_x();
   }
-  void set_x(value_type x, uint8_t ai=0) {
-    return get_analog(ai).set(0,x);
-  }
-  
-  value_type get_y(uint8_t ai=0) const {
-    return get_analog(ai).get(1);
-  }
-  void set_y(value_type y, uint8_t ai=0) {
-    return get_analog(ai).set(1,y);
+  void set_x(axis_value_type x, uint8_t ai=0) {
+    return get_analog(ai).get_x(x);
   }
   
-  value_type get_z(uint8_t ai=0) const {
-    return get_analog(ai).get(2);
+  axis_value_type get_y(uint8_t ai=0) const {
+    return get_analog(ai).get_y();
   }
-  void set_z(value_type z, uint8_t ai=0) {
-    return get_analog(ai).set(2,z);
+  void set_y(axis_value_type y, uint8_t ai=0) {
+    return get_analog(ai).get_y(y);
+  }
+  
+  axis_value_type get_z(uint8_t ai=0) const {
+    return get_analog(ai).get_z();
+  }
+  void set_z(axis_value_type z, uint8_t ai=0) {
+    return get_analog(ai).get_z(z);
   }
   
   // ** enum your 'aid' [see gamepad.h] **
