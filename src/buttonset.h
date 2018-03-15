@@ -77,6 +77,11 @@ public:
   template<class SerialType=DefaultHardwareSerial>
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const;
   
+  template<class SerialType=DefaultHardwareSerial>
+  void println(int verbose=0, SerialType& theSerialPrinter = Serial) const {
+    print(verbose, theSerialPrinter);
+    theSerialPrinter.println();
+  }
 };
 
 

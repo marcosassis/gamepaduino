@@ -30,13 +30,11 @@ void loop() {
   // use this to take action about many buttons
   if(p1.any_button_state_has_changed()) {
     Serial.print(micros()); Serial.print("\tp1:\t");
-    //p1.println(2); // verbose=2: print all '{ button_name: button_state, ... }'
-    p1.print(2); Serial.println();
+    p1.println(2); // verbose=2: print all '{ button_name: button_state, ... }'
   }
   
   if(p2.any_button_state_has_changed()) {
     Serial.print(micros()); Serial.print("\tp2:\t");
-    //p2.println(2);
-    p2.print(2); Serial.println();
+    p2.println(2);
   }
 }
