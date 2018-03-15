@@ -6,7 +6,7 @@
 
 namespace gamepad {
 
-
+/// this bit_analog infrastructure only makes sense if everything is compiler-time accessible...
 template< typename uint_Type,
           typename axis_value_Type,
           uint_Type BITMASK1, uint_Type BeginIndex1,
@@ -37,6 +37,12 @@ struct bit_analog: public typename analog_mask_traits_::analog_abstract_type
   typedef analog_mask_traits::analog_abstract_pointer       analog_abstract_pointer;
   typedef analog_mask_traits::analog_abstract_reference     analog_abstract_reference;
   static const uint8_t N_AXES = analog_mask_traits::N_AXES;
+  /// ... because we don't store anything in object ;)
+  ///     ( values are already stored on parent->buttons. since they're always at same place,
+  ///       compiler-time accessible values(static const)/types will make everything lean.
+  ///       see below how to use bit_analog::analog_mask_traits:: values )
+  ///     ( but if you need to store analog values apart on your object, use something like
+  ///       `analog_t[N_ANALOGS] myanalogs`, see analog.h )
  
 protected:
   bit_gamepad& parent;
@@ -46,7 +52,6 @@ public:
   bit_analog(bit_gamepad& aparent): parent(aparent) {}
   
   virtual value_type get(uint8_t i) const {
-    
     return ( parent.get_buttons() & analog_mask_traits::BIT_MASKS[i] ) 
                                >> analog_mask_traits::BIT_INDEXES[i]  ;
   }
