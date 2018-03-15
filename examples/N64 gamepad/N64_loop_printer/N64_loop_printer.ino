@@ -1,9 +1,8 @@
-// see also N64_loop_print_on_changes
-
-// #define _GAMEPAD_SINGLEPLAYER // if you din't install LinkedList yet, define this here
+// #define _GAMEPAD_SINGLEPLAYER // before include // if you din't install LinkedList yet, define this
 // #include "N64_gamepad_usb.h" // if your board is USB enabled you can test this
 #include "N64_gamepad.h"
-// this defines multiplayer and gamepad interfaces/classes and implementation for N64 gamepad protocol
+// this defines multiplayer and gamepad interfaces/classes
+// and implementation for N64 gamepad protocol
 
 // using gamepad;
 // using gamepad::SNES_gamepad;
@@ -54,7 +53,7 @@ void loop() {
   else
     Serial.print("p1:\t");
   
-  p1.print(VERBOSE_LEVEL); /// print p1
+  p1.print(VERBOSE_LEVEL); // print p1
   
   if(VERBOSE_LEVEL>=2)
     Serial.print("\n");
@@ -66,7 +65,7 @@ void loop() {
   else
     Serial.print("p2:\t");
   
-  p2.print(VERBOSE_LEVEL); /// print p2
+  p2.print(VERBOSE_LEVEL); // print p2
   
   if(VERBOSE_LEVEL>=2)
     Serial.print("\n\n");
