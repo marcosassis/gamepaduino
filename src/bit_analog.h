@@ -38,11 +38,11 @@ struct bit_analog: public typename analog_mask_traits_::analog_abstract_type
   typedef analog_mask_traits::analog_abstract_reference     analog_abstract_reference;
   static const uint8_t N_AXES = analog_mask_traits::N_AXES;
   /// ... because we don't store anything in object ;)
-  ///     ( values are already stored on parent->buttons. since they're always at same place,
+  ///     - values are already stored on parent->buttons. since they're always at same place,
   ///       compiler-time accessible values(static const)/types will make everything lean.
-  ///       see below how to use bit_analog::analog_mask_traits:: values )
-  ///     ( but if you need to store analog values apart on your object, use something like
-  ///       `analog_t[N_ANALOGS] myanalogs`, see analog.h )
+  ///       see below how to use bit_analog::analog_mask_traits:: values
+  ///     - but if you need to store analog values apart on your object, use something like
+  ///       `analog_t myanalogs[N_ANALOGS]`, see analog.h
  
 protected:
   bit_gamepad& parent;

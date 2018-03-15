@@ -103,7 +103,10 @@ public:
     action_after_read();
   }
 
-  virtual const directional* get_dpad(uint8_t i=0)
+  /*virtual*/ const uint8_t get_n_dpads() const {
+    return n_dpads;
+  }
+  virtual const directional* get_dpad(uint8_t i=0) const
   {
     if(dpads && n_dpads && i<n_dpads)
       return dpads+i;

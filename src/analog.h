@@ -91,27 +91,57 @@ struct analog_t: public analog_abstract<value_type,Dimensions> {
 /// helper "shell" class so we don't have to obligate non-analog capable 
 /// gamepad to have analog interface
 /**
-    this does not stores analogs, it's abstract by get_analog/set_analog
+    if your class needs to store separate values/members for analogs, use analog_t
     
-        if your class needs to store separate values/members for analogs, use
-        analog_t for each analog stick (or whatever) your gamepad has
-        
-        if your class/protocol represents analogs values together with buttons
-        values, let's say in specific bits of an integer (for buttons, or
-        bytes/words for each analog axis), then you need to check bit_analog.h
+    if your class/protocol represents analogs values together with buttons
+    values, let's say in specific bits of an integer (for buttons, or
+    bytes/words for each analog axis), then you need to check bit_analog.h
     
-    helpful: get_x(), get_y() and get_z() (when makes sense by N_ANALOGS)
+    helpful: get_x(), get_y() and get_z() (when makes sense by AnalogType::N_AXIS)
+    
+    as with gamepad with directionals, this does not store AnalogType objects
+    (both lists are OO enabled, that's because)
+    
+      - but if a class uses `has_analogs` name/semantics, so it has to have at least 1
+      - and:
+        - for directionals it makes sense that button mappings (directional is a subset)
+          may be cerated dynamically
+        - but this doesn't makes so much sense for multiple bit values
+          - so, to optimize it all, everything on this analog interface is static
+            (see also bit_analog.h)
+          
  */
-template<class ButtonSetType, typename value_type, uint8_t Dimensions=2, uint8_t NUMBEROF_ANALOGS=1> 
-struct has_analogs: public ButtonSetType {
+template<class ButtonSetType, typename AnalogType, uint8_t NUMBEROF_ANALOGS=1> 
+struct has_analogs: public ButtonSetType
+{
   typedef ButtonSetType button_set_base;
-  typedef value_type    value_t;
-  static const uint8_t N_ANALOGS = NUMBEROF_ANALOGS;
+  typedef AnalogType    analog_type;
+  typedef typename analog_type::value_type  value_type;
   
+  static const uint8_t N_ANALOGS = NUMBEROF_ANALOGS;
   STATIC_CHECK(NUMBEROF_ANALOGS>=1);
   
-  virtual const analog_abstract& get_analog(uint8_t ai=0) const = 0;
-  virtual const void             set_analog(const analog_abstract& aval, uint8_t ai=0) = 0;
+protected:
+  analog_type* analogs;
+  
+public:
+
+  has_analogs(const button_set_base& base, analog_type* analogs)
+  : buttonset(base), analogs(analogs)
+  {}
+
+  virtual const analog_abstract& get_analog(uint8_t ai=0) const
+  {
+    if(analogs && i<N_ANALOGS)
+      return analogs+i;
+
+    return analogs;
+  }
+  virtual void set_analog(analog_type& newanalog, uint8_t i=0)
+  {
+    if(analogs && i<N_ANALOG)
+      analogs[i] = newanalog;
+  }
 
   value_type get_x(uint8_t ai=0) const {
     return get_analog(ai).get(0);
