@@ -15,8 +15,10 @@
 
 namespace gamepad {
 
-///                               32 bits   axis_t  x bit mask      y bit mask 
-typedef bit_analog_mask_traits_2D<uint32_t, int8_t, 0x00FF0000, 16, 0xFF000000, 24>
+///                                 32 bits   axis_t  x bit mask      y bit mask 
+//typedef bit_analog_mask_traits_2D<uint32_t, int8_t, 0x00FF0000, 16, 0xFF000000, 24>
+
+typedef bit_analog_mask_traits_2D<uint32_t, int8_t, 16, 24> // =]
     N64_analog_mask_traits;
 
 //! command and read a N64 controller

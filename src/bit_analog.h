@@ -9,8 +9,8 @@ namespace gamepad {
 /// this bit_analog infrastructure only makes sense if everything is compiler-time accessible...
 template< typename uint_Type,
           typename axis_value_Type,
-          uint_Type BITMASK1, uint_Type BeginIndex1, /// oh, I'm not liking this, must have a way
-          uint_Type BITMASK2, uint_Type BeginIndex2 >
+          uint_Type BeginIndex1, /// oh, beautiful: masks are calculated based on types and begin positions
+          uint_Type BeginIndex2 >
 struct bit_analog_mask_traits_2D
 {
   typedef  uint_Type        uint_type;
@@ -25,14 +25,14 @@ struct bit_analog_mask_traits_2D
   typedef analog_abstract_type*                     analog_abstract_pointer;
 };
 
-template< typename U, typename A, U BM1, U I1, U BM2, U I2 >
+template< typename U, typename A, U I1, U I2 >
 static const U 
-bit_analog_mask_traits_2D<U,A,BM1,I1,BM2,I2>::BIT_MASKS[2]
- = { BM1, BM2 };
+bit_analog_mask_traits_2D<U,A,I1,I2>::BIT_MASKS[2]
+ = { U(~A(0)) << I1 , U(~A(0)) << I2 };
 
-template< typename U, typename A, U BM1, U I1, U BM2, U I2 >
+template< typename U, typename A, U I1, U I2 >
 static const U 
-bit_analog_mask_traits_2D<U,A,BM1,I1,BM2,I2>::BIT_INDEXES[2]
+bit_analog_mask_traits_2D<U,A,I1,I2>::BIT_INDEXES[2]
  = { I1, I2 };
 
 
