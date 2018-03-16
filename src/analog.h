@@ -30,14 +30,13 @@ struct analog_abstract
   value_type operator[](uint8_t i) const {
     return get(i);
   }
-
+  
   value_type get_x() const {
     return get(0);
   }
   void set_x(value_type x) {
     return set(0,x);
   }
-  
   /// [get_y and get_z only compile when N_AXES corresponds]
   value_type get_y() const {
     static_assert(N_AXES>=2, "get_y is not available for class instances with 1 dimension");
@@ -47,7 +46,6 @@ struct analog_abstract
     static_assert(N_AXES>=2, "set_y is not available for class instances with 1 dimension");
     return set(1,y);
   }
-  
   value_type get_z() const {
     static_assert(N_AXES>=3, "get_z is not available for class instances with N_AXES<3");
     return get(2);
@@ -138,17 +136,15 @@ public:
   has_analogs(analog_type* instancedanalogs)
   : analogs(instancedanalogs)
   {}
-  virtual const analog_type& get_analog(uint8_t i=0) const
+  
+  /// i don't think we can afford to check index range every time, so user must be conscious
+  const analog_type& get_analog(uint8_t i=0) const
   {
-    if(i<N_ANALOGS)
-      return analogs[i];
-
-    return analogs[0];
+    return analogs[i];
   }
-  virtual void set_analog(analog_type& newanalog, uint8_t i=0)
+  void set_analog(analog_type& newanalog, uint8_t i=0)
   {
-    if(i<N_ANALOGS)
-      analogs[i].copy(newanalog);
+    analogs[i].copy(newanalog);
   }
 
   axis_value_type get_x(uint8_t ai=0) const {
