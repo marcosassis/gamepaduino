@@ -23,10 +23,13 @@ struct active_gamepad: public gamepad_type {
   ///
   /// you have to override this one or one of the others
   ///
-  virtual void action_button_changed(uint8_t i) {} 
+  virtual void action_button_changed(uint8_t i) {
+    _GAMEPAD_DEBUG("active_gamepad::action_button_changed");
+  } 
 
   /// maybe you'd override this
   virtual void action_any_button_changed() {
+    _GAMEPAD_DEBUG("active_gamepad::action_any_button_changed");
     for(uint8_t i=0; i<get_n_buttons(); ++i) // if this for is really needed (for all buttons) = ok this imp.
       if(button_state_has_changed(i))        // but you'll have to override action_button_changed
         action_button_changed(i);
@@ -34,6 +37,7 @@ struct active_gamepad: public gamepad_type {
   
   /// or even this one, maybe
   virtual void action_after_read() { 
+    _GAMEPAD_DEBUG("active_gamepad::action_after_read");
     gamepad_t::action_after_read();    // call base action_after_read!
     if(any_button_state_has_changed()) // if this question is fast (as with bit_gamepad) = ok this imp.
       action_any_button_changed();
@@ -65,7 +69,9 @@ struct active_gamepad: public gamepad_type {
       
       button_state_has_changed(i) is buttonset:: interface (check out)     
   */
-  virtual void flush() {}
+  virtual void flush() {
+    _GAMEPAD_DEBUG("active_gamepad::flush");
+  }
 };
 
 }

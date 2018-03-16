@@ -86,12 +86,15 @@ public:
   /// override of gamepad:: , you can override but must call 
   /// this bit_gamepad::action_before_read inside yours.
   virtual void action_before_read() {
+    _GAMEPAD_DEBUG("bit_gamepad::action_before_read");
+    gamepad::action_before_read();
     buttons_last = buttons;
     buttons = 0;
   }
   
   template<class SerialType=DefaultHardwareSerial>
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const {
+    _GAMEPAD_DEBUG("bit_gamepad::read");
     if(verbose>1)
       gamepad::print(verbose, theSerialPrinter);
     else

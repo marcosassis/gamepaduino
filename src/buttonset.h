@@ -12,6 +12,15 @@ typedef HardwareSerial  DefaultHardwareSerial;
 
 namespace gamepad {
 
+//#define _GAMEPAD_DEBUG_PRINT_
+
+#ifdef _GAMEPAD_DEBUG_PRINT_
+  #define _GAMEPAD_DEBUG(messg) Serial.print(get_id()); Serial.print(":\t"); Serial.println((messg));
+  #define _GAMEPAD_DEBUG_noid(messg) Serial.print("\t"); Serial.println((messg));
+#else
+  #define _GAMEPAD_DEBUG(messg)
+  #define _GAMEPAD_DEBUG_noid(messg)
+#endif  
 
 /// helper function, linear search in an array
 template<class Type=String>
@@ -88,6 +97,7 @@ public:
 template<class SerialType>
 void buttonset::print(int verbose, SerialType& theSerialPrinter) const
 {
+  _GAMEPAD_DEBUG("buttonset::print");
   uint8_t nb = get_n_buttons();
   if(verbose>=3) {
     for(uint8_t i=0; i<nb; ++i) {

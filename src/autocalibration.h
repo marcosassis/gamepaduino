@@ -1,61 +1,71 @@
-#ifndef _GAMEPAD_ANALOG_H
-#define _GAMEPAD_ANALOG_H
+#ifndef _GAMEPAD_AUTOCALIBRATION_H
+#define _GAMEPAD_AUTOCALIBRATION_H
 
-//#include "buttonset.h"
+//#include "analog.h"
 
 namespace gamepad {
 
-/// everything that is not binary is called analog [in this gamepad context]
 template<typename AxisValueType, uint8_t Dimensions=2>
-struct analog_abstract
+struct calibration_abstract
 {
-  /// representation type for each dimension/axis of a analog value
   typedef AxisValueType axis_value_type;
-  typedef axis_value_type value_type;
-  
-  /// multiaxis (or just 1), default is (x,y)
   static const uint8_t N_AXES = Dimensions;
-  
   static_assert(N_AXES>=1, "number of axis bust be positive");
+  typedef float float_t;
   
-  virtual  value_type   get(uint8_t i)                const = 0;
-  virtual  void         set(uint8_t i, value_type v)        = 0;
+  virtual  float_t  get_max(uint8_t i) const = 0;
+  virtual  void     set_max(uint8_t i, float_t v) = 0;
+  virtual  float_t  get_min(uint8_t i) const = 0;
+  virtual  void     set_min(uint8_t i, float_t v) = 0;
   
-  virtual  void copy (const analog_abstract& other) {
+  /// 0.0 == 0% ---- 1.0 == 100%
+  virtual  float_t  get_cal(uint8_t i)      const = 0;
+  virtual  void     set_cal(uint8_t i, float_t v) = 0;
+  
+  /*virtual  void copy (const analog_abstract& other) {
     for(uint8_t ii=0; ii<N_AXES; ++ii)
       set(ii, other.get(ii));
-  }
+  }*/
 
-  /// operator and specific names
-  /// all inline, so they're just aliases
-  value_type operator[](uint8_t i) const {
+  /*float_t operator[](uint8_t i) const {
     return get(i);
-  }
+  }*/
   
-  value_type get_x() const {
-    return get(0);
+  /// all inline, so they're just aliases
+  float_t get_x_cal() const {
+    return get_cal(0);
   }
-  void set_x(value_type x) {
-    return set(0,x);
+  void set_x_cal(float_t x) {
+    return set_cal(0,x);
   }
-  /// [*et_y and *et_z only compile when N_AXES corresponds]
-  value_type get_y() const {
-    static_assert(N_AXES>=2, "get_y is not available for class instances with 1 dimension");
-    return get(1);
+  /// [*et_y_cal and *et_z_cal only compile when N_AXES corresponds]
+  float_t get_y_cal() const {
+    static_assert(N_AXES>=2, "get_y_cal is not available for class instances with 1 dimension");
+    return get_cal(1);
   }
-  void set_y(value_type y) {
-    static_assert(N_AXES>=2, "set_y is not available for class instances with 1 dimension");
-    return set(1,y);
+  void set_y_cal(float_t y) {
+    static_assert(N_AXES>=2, "set_y_cal is not available for class instances with 1 dimension");
+    return set_cal(1,y);
   }
-  value_type get_z() const {
-    static_assert(N_AXES>=3, "get_z is not available for class instances with N_AXES<3");
-    return get(2);
+  float_t get_z_cal() const {
+    static_assert(N_AXES>=3, "get_z_cal is not available for class instances with N_AXES<3");
+    return get_cal(2);
   }
-  void set_z(value_type z) {
-    static_assert(N_AXES>=3, "set_z is not available for class instances with N_AXES<3");
-    return set(2,z);
+  void set_z_cal(float_t z) {
+    static_assert(N_AXES>=3, "set_z_cal is not available for class instances with N_AXES<3");
+    return set_cal(2,z);
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 
 /// concrete implementation for when you want to (statically) store
@@ -171,4 +181,4 @@ public:
 };
 
 }
-#endif // _GAMEPAD_ANALOG_H
+#endif // _GAMEPAD_AUTOCALIBRATION_H

@@ -2,5 +2,6 @@
 __vm
 Debug
 gamepaduino.componentinfo.xml
+extras
 extras/docs
 src/midi_proto/org

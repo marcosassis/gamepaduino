@@ -27,16 +27,6 @@ protected:
   virtual void latch();
   virtual void read_imp();
   
-  uint8_t get_latch_pin() const {
-    return latch_pin;
-  }
-  uint8_t get_clock_pin() const {
-    return clock_pin;
-  }
-  uint8_t get_data_pin() const {
-    return data_pin;
-  }
-  
   virtual void read_bit(uint8_t i) {
     buttons |= (digitalRead(data_pin) << i);
   }
@@ -70,6 +60,16 @@ public:
     return names;
   }
   
+  uint8_t get_latch_pin() const {
+    return latch_pin;
+  }
+  uint8_t get_clock_pin() const {
+    return clock_pin;
+  }
+  uint8_t get_data_pin() const {
+    return data_pin;
+  }
+    
 #ifdef _GAMEPAD_SNES_MULTIPLAYER
   friend struct SNES_multiplayer;/// use this if you want multiple SNES controllers support
   friend struct multiplayer<SNES_gamepad>; /// don't use directly this

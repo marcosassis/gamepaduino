@@ -90,11 +90,16 @@ public:
 
   /// please check active_gamepad.h before override directly
   /// from gamepad::action_*_read member functions
-  virtual void action_before_read() {}
-  virtual void action_after_read() {}
+  virtual void action_before_read() {
+    _GAMEPAD_DEBUG("gamepad::action_before_read");
+  }
+  virtual void action_after_read() {
+    _GAMEPAD_DEBUG("gamepad::action_after_read");
+  }
 
   /// the BASIC idea of gamepad library/interface is to READ controllers INPUTS->MCU
   virtual void read() {
+    _GAMEPAD_DEBUG("gamepad::read");
     action_before_read();
     noInterrupts();
     latch();

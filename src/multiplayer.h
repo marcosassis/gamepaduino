@@ -105,21 +105,25 @@ struct multiplayer
     
   */
   virtual void read() {
+    _GAMEPAD_DEBUG_noid("multiplayer::read");
     //naive_read_all(); // maybe this can be safer in some cases, who knows
     read_all_without_interrupts();
   }
   
   /// only semantics (it's inline, practically free)
   void read_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::read_all");
     read();
   }
   
   void action_before_read_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::action_before_read_all");
     for(uint8_t p = 0; p<players.size(); ++p)
       this->players.get(p)->action_before_read();
   }
     
   void action_after_read_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::action_after_read_all");
     for(uint8_t p = 0; p<players.size(); ++p)
       this->players.get(p)->action_after_read();
   }
@@ -128,12 +132,14 @@ protected:
   
   /// no, please no
   void naive_read_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::naive_read_all");
     for(uint8_t i = 0; i<players.size(); ++i)
       players.get(i)->read();
   }
 
   /// don't override non-virtual members (ever), other points of extension are provided
   void read_all_without_interrupts() {
+    _GAMEPAD_DEBUG_noid("multiplayer::read_all_without_interrupts");
     action_before_read_all();
     noInterrupts();             // latch and read all on the same batch
     latch_all_read_imp_all();   // (it's not necessarily on the same latch,
@@ -155,12 +161,14 @@ protected:
   /// it's architecture is different, override this
   /// or other methods of multiplayer (virtual) interface
   virtual void latch_all_read_imp_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::latch_all_read_imp_all");
     latch_AND_read_imp_all(); // possible paths
     //latch_all_THEN_read_imp_all();
   }
 
   /// latch AND read all [not virtual, see latch_all_read_imp_all()]
   void latch_AND_read_imp_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::latch_AND_read_imp_all");
     for(uint8_t p = 0; p<players.size(); ++p) {
       gamepad_pointer pp = this->players.get(p);
       pp->latch();
@@ -172,6 +180,7 @@ protected:
   
   /// latch_all THEN read_all [not virtual, see latch_all_read_imp_all()]
   void latch_all_THEN_read_imp_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::latch_all_THEN_read_imp_all");
     latch_all();  
     read_imp_all();     
   }
@@ -179,10 +188,12 @@ protected:
   /// PLEASE derive from this class and override these methods for each
   /// multiplayer specific protocol (see SNES_multiplayer)  
   virtual void latch_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::latch_all");
     for(uint8_t p = 0; p<players.size(); ++p)
       this->players.get(p)->latch();   
   }
   virtual void read_imp_all() {
+    _GAMEPAD_DEBUG_noid("multiplayer::read_imp_all");
     for(uint8_t p = 0; p<players.size(); ++p)
       this->players.get(p)->read_imp();   
   }  

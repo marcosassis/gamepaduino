@@ -8,7 +8,7 @@
 #include "Joystick.h"
 
 namespace gamepad {
-
+  
 /*
 Joystick_(uint8_t hidReportId = JOYSTICK_DEFAULT_REPORT_ID,
           uint8_t joystickType = JOYSTICK_TYPE_JOYSTICK,
@@ -51,11 +51,14 @@ struct gamepad_joystick: public active_gamepad<gamepad_type> {
     }
 
     virtual void action_any_button_changed() {
+      _GAMEPAD_DEBUG("gamepad_joystick::action_any_button_changed");
       gamepad_base::action_any_button_changed();
       usb_joystick.sendState();
     }
 
     virtual void action_button_changed(uint8_t i) {
+      _GAMEPAD_DEBUG("gamepad_joystick::action_button_changed");
+      gamepad_base::action_button_changed(i);
       if (get_button_state(i))
         usb_joystick.pressButton(i);
       else
@@ -76,7 +79,7 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
     
     N64_hid(uint8_t id, uint8_t N64_pin=3, bool init=true)
       : usb_joystick(joystick_type(id+2, JOYSTICK_TYPE_JOYSTICK, N_BUTTONS, 0,
-                                   true, true, false, false, false, false, false, false, false, false, false)),
+                                   true,true,false,false,false,false,false,false,false,false,false)),
         gamepad_base(N64_gamepad(id, N64_pin, true), usb_joystick)
     {
       this->usb_joystick.setXAxisRange(-127, 127);
@@ -84,6 +87,7 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
     }
 
     virtual void action_any_button_changed() {
+      _GAMEPAD_DEBUG("N64_hid::action_any_button_changed");
       this->usb_joystick.setXAxisRange(analog_range.xmin, analog_range.xmax);//this is gambiarra, soon (todo) will be generic
       this->usb_joystick.setXAxisRange(analog_range.ymin, analog_range.ymax);//todo: investigate more this behavior
       this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
@@ -107,7 +111,7 @@ struct SNES_hid: public gamepad_joystick<SNES_gamepad> {
     
     SNES_hid(uint8_t id, uint8_t data_pin = 7, uint8_t clock_pin = 4, uint8_t latch_pin = 5)
       : usb_joystick(joystick_type(id+2, JOYSTICK_TYPE_GAMEPAD, N_BUTTONS, 0,
-                                   false, false, false, false, false, false, false, false, false, false, false)),
+                                   false,false,false,false,false,false,false,false,false,false,false)),
         gamepad_base(SNES_gamepad(id, data_pin, clock_pin, latch_pin), usb_joystick)
     {} // this is almost a typedef with constructors mapping
 };
