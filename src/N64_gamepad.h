@@ -15,9 +15,10 @@
 
 namespace gamepad {
 
-///                                 32 bits   axis_t  x bit mask      y bit mask 
+///   i was not liking this:        32 bits   axis_t  x bit mask i(x) y bit mask i(y)
 //typedef bit_analog_mask_traits_2D<uint32_t, int8_t, 0x00FF0000, 16, 0xFF000000, 24>
 
+/// and that's why:               32 bits   axis_t  x   y
 typedef bit_analog_mask_traits_2D<uint32_t, int8_t, 16, 24> // =]
     N64_analog_mask_traits;
 

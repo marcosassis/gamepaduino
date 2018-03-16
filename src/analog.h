@@ -66,9 +66,7 @@ struct analog_abstract
     
     so, this implementation is kept apart from interface(analog_abstract)
     and you must use references/pointers to analog_abstract when dealing
-    directly with analog entities
-    
-    (see bit_analog.h) (this class is also used to transition values to bit_analog)
+    directly with analog entities (see also bit_analog.h)
  */
 template<typename value_type, uint8_t Dimensions=2>
 struct analog_t: public analog_abstract<value_type,Dimensions>

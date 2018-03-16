@@ -37,6 +37,7 @@ bit_analog_mask_traits_2D<U,A,I1,I2>::BIT_INDEXES[2]
 
 
 /// bitmap representation for analog types
+/// (that are bit mapped together with buttons)
 template<class analog_mask_traits_>
 struct bit_analog_t: public analog_mask_traits_::analog_abstract_type
 {
@@ -74,6 +75,7 @@ public:
 };
 
 
+/// helper for gamepads that has_analogs that are bit mapped together with buttons
 template<class analog_mask_traits_, uint8_t NUMBEROF_ANALOGS=1> 
 struct has_bitmask_analogs
 : public has_analogs< bit_analog_t<analog_mask_traits_> , NUMBEROF_ANALOGS >
