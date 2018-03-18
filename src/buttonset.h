@@ -76,21 +76,53 @@ public:
     return get_id_by_name(aname, get_button_names(), n_buttons);
   }
 
+  
+  /// below on: printing
+  
+  template<class SerialType=DefaultHardwareSerial>
+  void print_button_as_bit
+    (uint8_t i, SerialType& theSerialPrinter = Serial) const
+  {
+    theSerialPrinter.print(get_button_state(i));
+  }
+  
+  template<class SerialType=DefaultHardwareSerial>
+  void print_button_name_state
+    (uint8_t i, String div1=": ", String div2=", ", SerialType& theSerialPrinter = Serial) const
+  {
+    theSerialPrinter.print(get_button_names()[i]);
+    if(div1.length())
+      theSerialPrinter.print(div1);
+    print_button_as_bit(i,theSerialPrinter);
+    if(div2.length())
+      theSerialPrinter.print(div2);
+  }  
+  
+  template<class SerialType=DefaultHardwareSerial>
+  void print_all_buttons
+    (bool print_name=true, String begs="", String ends="",
+    String div1=": ", String div2=", ", uint8_t sepeach=8, String sep=" ",
+    SerialType& theSerialPrinter = Serial) const;
+  
   /**
     verbose:
     0: print buttonset buttons as bits
     1: same as before, but with spaces between bytes
     2: print all '{ button_name: button_state, ... }'
     3: print all 'button_name:\t\tbutton_state\n'
-  */
+  */  
   template<class SerialType=DefaultHardwareSerial>
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const;
   
-  template<class SerialType=DefaultHardwareSerial>
-  void println(int verbose=0, SerialType& theSerialPrinter = Serial) const {
-    print(verbose, theSerialPrinter);
-    theSerialPrinter.println();
+  /// you can override print (for use in template functions)
+  /// but you should override this too, so just use this macro inside class:
+  #define _GAMEPAD_AUX_IMPLEMENT_PRINTLN \
+  template<class SerialType=DefaultHardwareSerial> \
+  void println(int verbose=0, SerialType& theSerialPrinter = Serial) const { \
+    print(verbose, theSerialPrinter); \
+    theSerialPrinter.println(); \
   }
+  _GAMEPAD_AUX_IMPLEMENT_PRINTLN
 };
 
 
@@ -98,35 +130,37 @@ template<class SerialType>
 void buttonset::print(int verbose, SerialType& theSerialPrinter) const
 {
   _GAMEPAD_DEBUG("buttonset::print");
-  uint8_t nb = get_n_buttons();
-  if(verbose>=3) {
-    for(uint8_t i=0; i<nb; ++i) {
-      theSerialPrinter.print(get_button_names()[i]);
-      theSerialPrinter.print(":\t\t");
-      theSerialPrinter.print(get_button_state(i));
-      theSerialPrinter.print("\n");
-    }  
-  }
-  else if(verbose>=2) {
-    theSerialPrinter.print("{");
-    for(uint8_t i=0; i<nb; ++i) {
-      theSerialPrinter.print(" ");
-      theSerialPrinter.print(get_button_names()[i]);
-      theSerialPrinter.print(": ");
-      theSerialPrinter.print(get_button_state(i));
-      if(i==nb-1)
-        theSerialPrinter.print(" ");
-      else
-        theSerialPrinter.print(", ");
-    }
-    theSerialPrinter.print("}");
-  }
-  else {
-    for(uint8_t i=0; i<nb; ++i) {
-      if(verbose>=1 && (i%8)==0 && i!=0)
-        theSerialPrinter.print(" ");
-      theSerialPrinter.print(get_button_state(i));
-    }
+  if(verbose>=3)
+    print_all_buttons(true,"\n","",":\t\t","\n",0,"",theSerialPrinter);
+  else if(verbose==2)
+    print_all_buttons(true,"{"," }",": ",", ",0,"",theSerialPrinter);
+  else if(verbose==1)
+    print_all_buttons(false,"","","","",8," ",theSerialPrinter);
+  else
+    print_all_buttons(false,"","","","",0,"",theSerialPrinter);
+}
+
+template<class SerialType>
+void buttonset::print_all_buttons
+  (bool print_name, String begs, String ends, String div1, String div2,
+  uint8_t sepeach, String sep, SerialType& theSerialPrinter) const
+{
+  _GAMEPAD_DEBUG("buttonset::print_all_buttons");
+  
+  if(begs.length())
+    theSerialPrinter.print(begs);
+  
+  for(uint8_t i=0; i<n_buttons; ++i) {
+    if(sepeach && sep.length() && (i%sepeach)==0 && i!=0)
+      theSerialPrinter.print(sep);
+
+    if(i==(n_buttons-1))
+      div2 = ends;
+    
+    if(print_name)
+      print_button_name_state(i,div1,div2,theSerialPrinter);
+    else
+      print_button_as_bit(i,theSerialPrinter);
   }
 }
 

@@ -82,14 +82,18 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
                                    true,true,false,false,false,false,false,false,false,false,false)),
         gamepad_base(N64_gamepad(id, N64_pin, true), usb_joystick)
     {
-      this->usb_joystick.setXAxisRange(-127, 127);
-      this->usb_joystick.setYAxisRange(-127, 127);
+//      this->usb_joystick.setXAxisRange(-127, 127);
+//      this->usb_joystick.setYAxisRange(-127, 127);
+      this->usb_joystick.setXAxisRange(-100, 100);
+      this->usb_joystick.setYAxisRange(-100, 100);
     }
 
     virtual void action_any_button_changed() {
       _GAMEPAD_DEBUG("N64_hid::action_any_button_changed");
+      
       this->usb_joystick.setXAxisRange(analog_range.xmin, analog_range.xmax);//this is gambiarra, soon (todo) will be generic
       this->usb_joystick.setXAxisRange(analog_range.ymin, analog_range.ymax);//todo: investigate more this behavior
+      
       this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
       this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);
       // really, I still don't know what is the "most default" behavior for a usb joystick that IS ALSO a N64 controller...

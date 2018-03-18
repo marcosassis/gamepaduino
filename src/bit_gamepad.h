@@ -83,8 +83,8 @@ public:
     return buttons_last;
   }
   
-  /// override of gamepad:: , you can override but must call 
-  /// this bit_gamepad::action_before_read inside yours.
+  /// override of gamepad:: 
+  /// you must call this bit_gamepad::action_before_read inside yours.
   virtual void action_before_read() {
     _GAMEPAD_DEBUG("bit_gamepad::action_before_read");
     gamepad::action_before_read();
@@ -92,16 +92,18 @@ public:
     buttons = 0;
   }
   
+  /// override of buttonset:: 
   template<class SerialType=DefaultHardwareSerial>
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const {
-    _GAMEPAD_DEBUG("bit_gamepad::read");
+    _GAMEPAD_DEBUG("bit_gamepad::print");
     if(verbose>1)
       gamepad::print(verbose, theSerialPrinter);
     else
-      //Serial.println("!");
       print_bits(buttons, verbose, theSerialPrinter);
   }
-  
+  /// override of buttonset::println
+  /// same thing as buttonset::print, but assures we call bit_gamepad::print
+  _GAMEPAD_AUX_IMPLEMENT_PRINTLN 
 };
 
 }
