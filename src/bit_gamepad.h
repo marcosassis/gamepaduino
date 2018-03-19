@@ -97,7 +97,7 @@ public:
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const {
     _GAMEPAD_DEBUG("bit_gamepad::print");
     if(verbose>1)
-      gamepad::print(verbose, theSerialPrinter);
+      buttonset::print(verbose, theSerialPrinter);
     else
       print_bits(buttons, verbose, theSerialPrinter);
   }

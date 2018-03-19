@@ -129,6 +129,29 @@ public:
   uint8_t get_N64_pin() const {
     return N64_pin;
   }
+  
+  template<class SerialType=DefaultHardwareSerial>
+  void print(int verbose=0, SerialType& theSerialPrinter = Serial) const {
+    _GAMEPAD_DEBUG("N64_gamepad::print");
+    if(verbose>=3) {
+      theSerialPrinter.print("\nx:\t\t");
+      theSerialPrinter.print(get_x());
+      theSerialPrinter.print("\ny:\t\t");
+      theSerialPrinter.print(get_y());
+      buttonset::print(verbose, theSerialPrinter);
+    }
+    else if(verbose==2) {
+      theSerialPrinter.print("{ x: ");
+      theSerialPrinter.print(get_x());
+      theSerialPrinter.print(", y: ");
+      theSerialPrinter.print(get_y());
+      print_all_buttons(true,", "," }",": ",", ",0,"",theSerialPrinter);
+    }
+    else
+      print_bits(buttons, verbose, theSerialPrinter);
+      // same as bit_gamepag::print, print all bits of representation, including analog 
+  }
+  _GAMEPAD_AUX_IMPLEMENT_PRINTLN
 
   /// let's expose these, so user can play with protocol without messing with asm
   void AndrewBrownInitialize();
