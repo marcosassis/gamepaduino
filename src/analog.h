@@ -11,47 +11,63 @@ struct analog_abstract
 {
   /// representation type for each dimension/axis of a analog value
   typedef AxisValueType axis_value_type;
-  typedef axis_value_type value_type;
   
   /// multiaxis (or just 1), default is (x,y)
   static const uint8_t N_AXES = Dimensions;
   
   static_assert(N_AXES>=1, "number of axis bust be positive");
   
-  virtual  value_type   get(uint8_t i)                const = 0;
-  virtual  void         set(uint8_t i, value_type v)        = 0;
+  virtual  axis_value_type  get(uint8_t i)                    const = 0;
+  virtual  void             set(uint8_t i, axis_value_type v)       = 0;
   
-  virtual  void copy (const analog_abstract& other) {
+  virtual void copy (const analog_abstract& other) {
     for(uint8_t ii=0; ii<N_AXES; ++ii)
       set(ii, other.get(ii));
   }
+  
+  virtual void copy (axis_value_type values[N_AXES]) {
+    for(uint8_t ii=0; ii<N_AXES; ++ii)
+      set(ii, values[ii]);
+  }
 
-  /// operator and specific names
+  virtual void copy (axis_value_type avalue) {
+    for(uint8_t ii=0; ii<N_AXES; ++ii)
+      set(ii, avalue);
+  }
+
+  /// operators and specific names
   /// all inline, so they're just aliases
-  value_type operator[](uint8_t i) const {
+  
+  analog_abstract& operator=(const analog_abstract& other) {
+    copy(other);
+    return *this;
+  }
+  
+  /// rvalue only
+  axis_value_type operator[](uint8_t i) const {
     return get(i);
   }
   
-  value_type get_x() const {
+  axis_value_type get_x() const {
     return get(0);
   }
-  void set_x(value_type x) {
+  void set_x(axis_value_type x) {
     return set(0,x);
   }
   /// [*et_y and *et_z only compile when N_AXES corresponds]
-  value_type get_y() const {
+  axis_value_type get_y() const {
     static_assert(N_AXES>=2, "get_y is not available for class instances with 1 dimension");
     return get(1);
   }
-  void set_y(value_type y) {
+  void set_y(axis_value_type y) {
     static_assert(N_AXES>=2, "set_y is not available for class instances with 1 dimension");
     return set(1,y);
   }
-  value_type get_z() const {
+  axis_value_type get_z() const {
     static_assert(N_AXES>=3, "get_z is not available for class instances with N_AXES<3");
     return get(2);
   }
-  void set_z(value_type z) {
+  void set_z(axis_value_type z) {
     static_assert(N_AXES>=3, "set_z is not available for class instances with N_AXES<3");
     return set(2,z);
   }
@@ -72,25 +88,24 @@ struct analog_abstract
 template<typename value_type, uint8_t Dimensions=2>
 struct analog_t: public analog_abstract<value_type,Dimensions>
 {
-  /// representation type for each dimension/axis of a analog value
   typedef value_type axis_value_type;
-
-  /// multiaxis (or just 1), default is (x,y)
   static const uint8_t N_AXES = Dimensions;
+  typedef analog_abstract<value_type,N_AXES> analog_abstract_type;
   
   /// values statically [const sized array] stored
-  axis_value_type values[N_AXES];
-
-  typedef analog_abstract<value_type,N_AXES> analog_abstract_type;
-    
-  analog_t(axis_value_type values[]): values(values) {}
+  axis_value_type values_[N_AXES];
+  
+  analog_t() {
+    for(uint8_t i=0; i<N_AXES; ++i)
+      values_[i] = axis_value_type();
+  }
   
   /// i don't think we can afford to check index range every time, so user must be conscious
   virtual axis_value_type get(uint8_t i) const {
-    return values[i];
+    return values_[i];
   }
   virtual void set(uint8_t i, axis_value_type v) {
-    values[i]=v;
+    values_[i]=v;
   }
 };
 
@@ -119,7 +134,7 @@ struct analog_t: public analog_abstract<value_type,Dimensions>
           
  */
 template<typename AnalogType, uint8_t NUMBEROF_ANALOGS=1> 
-struct has_analogs
+struct has_analogs // i.e. is joypad
 {
   typedef AnalogType                              analog_type;
   typedef typename analog_type::axis_value_type   axis_value_type;
@@ -128,12 +143,14 @@ struct has_analogs
   static_assert(NUMBEROF_ANALOGS>=1, "if this class has_analogs, it have to have");
   
 protected:
+  /// don't store here (store on concrete classes)
+  /// we delegate polymorphism to analog_type
   analog_type* analogs;
   
 public:
 
-  has_analogs(analog_type* instancedanalogs)
-  : analogs(instancedanalogs)
+  has_analogs(analog_type* analogs_instances)
+  : analogs(analogs_instances)
   {}
   
   /// i don't think we can afford to check index range every time, so user must be conscious
@@ -145,26 +162,35 @@ public:
   {
     analogs[i].copy(newanalog);
   }
+  
+  const analog_type& get_analog_axis(uint8_t axisindex, uint8_t analogindex=0) const
+  {
+    return analogs[analogindex].get(axisindex);
+  }
+  void set_analog_axis(axis_value_type v, uint8_t axisindex, uint8_t analogindex=0)
+  {
+    analogs[analogindex].set(axisindex, v);
+  }
 
-  axis_value_type get_x(uint8_t ai=0) const {
-    return get_analog(ai).get_x();
+  axis_value_type get_x(uint8_t analogindex=0) const {
+    return get_analog(analogindex).get_x();
   }
-  void set_x(axis_value_type x, uint8_t ai=0) {
-    return get_analog(ai).get_x(x);
-  }
-  
-  axis_value_type get_y(uint8_t ai=0) const {
-    return get_analog(ai).get_y();
-  }
-  void set_y(axis_value_type y, uint8_t ai=0) {
-    return get_analog(ai).get_y(y);
+  void set_x(axis_value_type x, uint8_t analogindex=0) {
+    return get_analog(analogindex).set_x(x);
   }
   
-  axis_value_type get_z(uint8_t ai=0) const {
-    return get_analog(ai).get_z();
+  axis_value_type get_y(uint8_t analogindex=0) const {
+    return get_analog(analogindex).get_y();
   }
-  void set_z(axis_value_type z, uint8_t ai=0) {
-    return get_analog(ai).get_z(z);
+  void set_y(axis_value_type y, uint8_t analogindex=0) {
+    return get_analog(analogindex).set_y(y);
+  }
+  
+  axis_value_type get_z(uint8_t analogindex=0) const {
+    return get_analog(analogindex).get_z();
+  }
+  void set_z(axis_value_type z, uint8_t analogindex=0) {
+    return get_analog(analogindex).set_z(z);
   }
   
   // ** enum your 'aid' [see gamepad.h] **

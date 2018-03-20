@@ -40,8 +40,8 @@ public:
   virtual void set_button_state(uint8_t subsetindex, bool bs) {
     parent.set_button_state(get_button_parent_id(subsetindex), bs);
   }
-  virtual bool any_button_state_has_changed() const {
-    return parent.any_button_state_has_changed();
+  virtual bool any_state_has_changed() const {
+    return parent.any_state_has_changed();
   }
   virtual bool button_state_has_changed(uint8_t subsetindex) const {
     return parent.button_state_has_changed(get_button_parent_id(subsetindex));

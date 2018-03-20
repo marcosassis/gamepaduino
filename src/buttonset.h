@@ -22,6 +22,7 @@ namespace gamepad {
   #define _GAMEPAD_DEBUG_noid(messg)
 #endif  
 
+
 /// helper function, linear search in an array
 template<class Type=String>
 int get_id_by_name(Type aname, Type* names, unsigned max_names)
@@ -59,7 +60,7 @@ public:
   }
   virtual void set_button_state(uint8_t index, bool bs) = 0;
 
-  virtual bool any_button_state_has_changed() const = 0;
+  virtual bool any_state_has_changed() const = 0;
   virtual bool button_state_has_changed(uint8_t index) const = 0;
 
   virtual String* get_button_names() const = 0;
@@ -129,7 +130,7 @@ public:
 template<class SerialType>
 void buttonset::print(int verbose, SerialType& theSerialPrinter) const
 {
-  _GAMEPAD_DEBUG("buttonset::print");
+  //_GAMEPAD_DEBUG("buttonset::print");
   if(verbose>=3)
     print_all_buttons(true,"\n","",":\t\t","\n",0,"",theSerialPrinter);
   else if(verbose==2)
@@ -145,7 +146,7 @@ void buttonset::print_all_buttons
   (bool print_name, String begs, String ends, String div1, String div2,
   uint8_t sepeach, String sep, SerialType& theSerialPrinter) const
 {
-  _GAMEPAD_DEBUG("buttonset::print_all_buttons");
+  //_GAMEPAD_DEBUG("buttonset::print_all_buttons");
   
   if(begs.length())
     theSerialPrinter.print(begs);

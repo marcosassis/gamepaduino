@@ -4,8 +4,9 @@
 // adapter class for this cool USB HID joystick library:
 // https://github.com/MHeironimus/ArduinoJoystickLibrary
 
-#include "active_gamepad.h"
+//#include "active_gamepad.h"
 #include "Joystick.h"
+#include "autocalibration.h"
 
 namespace gamepad {
   
@@ -50,15 +51,17 @@ struct gamepad_joystick: public active_gamepad<gamepad_type> {
       return usb_joystick;
     }
 
-    virtual void action_any_button_changed() {
-      _GAMEPAD_DEBUG("gamepad_joystick::action_any_button_changed");
-      gamepad_base::action_any_button_changed();
+    /// override of active_gamepad::
+    virtual void action_any_state_changed() {
+      _GAMEPAD_DEBUG("gamepad_joystick::action_any_state_changed");
+      gamepad_base::action_any_state_changed(); /// call active_gamepad::
       usb_joystick.sendState();
     }
 
+    /// override of active_gamepad::
     virtual void action_button_changed(uint8_t i) {
       _GAMEPAD_DEBUG("gamepad_joystick::action_button_changed");
-      gamepad_base::action_button_changed(i);
+      gamepad_base::action_button_changed(i); /// call active_gamepad::
       if (get_button_state(i))
         usb_joystick.pressButton(i);
       else
@@ -69,8 +72,9 @@ struct gamepad_joystick: public active_gamepad<gamepad_type> {
 
 #ifdef _GAMEPAD_DEFINE_N64_HID
 /// out-of-the box Nintendo 64 controller adapter functionality (working great on Projetc 64)
-struct N64_hid: public gamepad_joystick<N64_gamepad> {
-    typedef gamepad_joystick<N64_gamepad> gamepad_base;
+struct N64_hid: public cal::tracks_analogs_limits<gamepad_joystick<N64_gamepad>,1> {
+    typedef gamepad_joystick<N64_gamepad>                       gamepad_joystick_base;
+    typedef cal::tracks_analogs_limits<gamepad_joystick_base,1> gamepad_base;
     joystick_type usb_joystick;
 
     N64_hid(const N64_gamepad& other)
@@ -80,7 +84,7 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
     N64_hid(uint8_t id, uint8_t N64_pin=3, bool init=true)
       : usb_joystick(joystick_type(id+2, JOYSTICK_TYPE_JOYSTICK, N_BUTTONS, 0,
                                    true,true,false,false,false,false,false,false,false,false,false)),
-        gamepad_base(N64_gamepad(id, N64_pin, true), usb_joystick)
+        gamepad_base(gamepad_joystick_base(N64_gamepad(id, N64_pin, true), usb_joystick))
     {
 //      this->usb_joystick.setXAxisRange(-127, 127);
 //      this->usb_joystick.setYAxisRange(-127, 127);
@@ -88,16 +92,25 @@ struct N64_hid: public gamepad_joystick<N64_gamepad> {
       this->usb_joystick.setYAxisRange(-100, 100);
     }
 
-    virtual void action_any_button_changed() {
-      _GAMEPAD_DEBUG("N64_hid::action_any_button_changed");
+    /// override of active_gamepad::
+    virtual void action_any_state_changed() {
+      _GAMEPAD_DEBUG("N64_hid::action_any_state_changed");
       
-      this->usb_joystick.setXAxisRange(analog_range.xmin, analog_range.xmax);//this is gambiarra, soon (todo) will be generic
-      this->usb_joystick.setXAxisRange(analog_range.ymin, analog_range.ymax);//todo: investigate more this behavior
-      
-      this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
-      this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);
-      // really, I still don't know what is the "most default" behavior for a usb joystick that IS ALSO a N64 controller...
-      gamepad_base::action_any_button_changed();
+      if(button_is_pressed(bid::reset)) {
+        reset_limits();
+        return;
+      }
+      else {
+        //this->usb_joystick.setXAxisRange(get_min(0), get_max(0));
+        //this->usb_joystick.setXAxisRange(get_min(1), get_max(1));
+        this->usb_joystick.setXAxisRange(get_min(0)+1, get_max(0)-1);
+        this->usb_joystick.setXAxisRange(get_min(1)+1, get_max(1)-1);//todo: investigate more this behavior
+        
+        this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
+        this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);
+        // really, I still don't know what is the "most default" behavior for a usb joystick that IS ALSO a N64 controller...
+      }
+      gamepad_base::action_any_state_changed(); /// call active_gamepad::
     }
 };
 #endif // _GAMEPAD_DEFINE_N64_HID

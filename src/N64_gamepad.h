@@ -102,7 +102,7 @@ protected:
   directional dpads_[2] = {directional(4,5,6,7, *this), directional(12,13,14,15, *this)};
   analog_type analogs_[2] = {analog_type(*this), analog_type(*this)};
   char raw_dump[33];        /// 1 received bit per byte // why 33??
-  uint8_t N64_pin_bit_mask; /// memory(1) vs time(1*N)
+  uint8_t N64_pin_bit_mask; /// memory[1 byte] vs time[1*N evaluations]
   uint8_t N64_pin;          /// arduino pin (not AVR PD)
   
 public:
@@ -130,6 +130,7 @@ public:
     return N64_pin;
   }
   
+  /// override of buttonset:: (with analog(x,y) printing)
   template<class SerialType=DefaultHardwareSerial>
   void print(int verbose=0, SerialType& theSerialPrinter = Serial) const {
     _GAMEPAD_DEBUG("N64_gamepad::print");
@@ -158,35 +159,10 @@ public:
   void AndrewBrownSend(unsigned char *buffer, char length);
   void AndrewBrownGet();
 
-  // todo: this inside calibration traits
-  struct {
-    int8_t xmax=0;
-    int8_t xmin=0;
-    int8_t ymax=0;
-    int8_t ymin=0;
-  } analog_range; 
-
-  float get_x_cal() {
-    float x = get_x();
-    if(x==0 || analog_range.xmax==0 || analog_range.xmin==0)
-      return 0.;
-    if(x>0)
-      return x/float(analog_range.xmax);
-    return -x/float(analog_range.xmin);
-  }
-  float get_y_cal() {
-    float y = get_y();
-    if(y==0 || analog_range.ymax==0 || analog_range.ymin==0)
-      return 0.;
-    if(y>0)
-      return y/float(analog_range.ymax);
-    return -y/float(analog_range.ymin);
-  }
-  
 #ifdef _GAMEPAD_N64_MULTIPLAYER
   /// each N64_gamepad has it's own single bidirectional communication/data pin
   /// (and arduino is far from fast enough to read all in parallel), so
-  /// default behavior is optimal
+  /// default behavior is **optimal**
   friend struct multiplayer<N64_gamepad>; // see multiplayer.h
 #endif
 
@@ -201,20 +177,9 @@ protected:
     AndrewBrownGet();
   }
   virtual void action_after_read() { // called by gamepad_base::read()
+    _GAMEPAD_DEBUG("N64_gamepad::action_after_read");
+    //gamepad::action_after_read();
     translate_raw_data();
-
-    if(button_is_pressed(bid::reset)) { // todo?: generalize reset gamepad function
-      analog_range.xmax = analog_range.xmin = analog_range.ymax = analog_range.ymin = 0;
-      // and then treat autocalibration, *if* enabled
-      return;
-    }
-    
-    int8_t aux = get_x(); // todo: generalize this analog autocalibration (traits?) 
-    if(aux>analog_range.xmax) analog_range.xmax=aux-1; // and parametrize this
-    if(aux<analog_range.xmin) analog_range.xmin=aux+1;
-    aux = get_y();
-    if(aux>analog_range.ymax) analog_range.ymax=aux-1;
-    if(aux<analog_range.ymin) analog_range.ymin=aux+1;
   }
 
   /// memory vs time again (time inside AndrewBrown's functions is crucial)

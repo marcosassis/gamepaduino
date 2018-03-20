@@ -12,11 +12,11 @@ template<class gamepad_type>
 struct active_gamepad: public gamepad_type {
   
   /// then this base type is the original input/reader class
-  typedef gamepad_type gamepad_t;
+  typedef gamepad_type gamepad_base;
 
   /// concrete classes should have deep copy semantics
-  active_gamepad(const gamepad_t& base) 
-  : gamepad_t(base)
+  active_gamepad(const gamepad_base& base) 
+  : gamepad_base(base)
   {}
 
   /// and any action must be achieved for each button
@@ -25,22 +25,24 @@ struct active_gamepad: public gamepad_type {
   ///
   virtual void action_button_changed(uint8_t i) {
     _GAMEPAD_DEBUG("active_gamepad::action_button_changed");
+    // nothing by default
   } 
 
-  /// maybe you'd override this
-  virtual void action_any_button_changed() {
-    _GAMEPAD_DEBUG("active_gamepad::action_any_button_changed");
+  /// maybe you'd override this (but you must call this inside yours)
+  virtual void action_any_state_changed() {
+    _GAMEPAD_DEBUG("active_gamepad::action_any_state_changed");
     for(uint8_t i=0; i<get_n_buttons(); ++i) // if this for is really needed (for all buttons) = ok this imp.
       if(button_state_has_changed(i))        // but you'll have to override action_button_changed
         action_button_changed(i);
   }  
   
   /// or even this one, maybe
+  /// this is override of gamepad_base::action_after_read()
   virtual void action_after_read() { 
     _GAMEPAD_DEBUG("active_gamepad::action_after_read");
-    gamepad_t::action_after_read();    // call base action_after_read!
-    if(any_button_state_has_changed()) // if this question is fast (as with bit_gamepad) = ok this imp.
-      action_any_button_changed();
+    gamepad_base::action_after_read();    // call base action_after_read!
+    if(any_state_has_changed()) // if this question is fast (as with bit_gamepad) = ok this imp.
+      action_any_state_changed();
   }
   
   /// [optional] [these flush() semantics depends on protocol/case]
@@ -74,5 +76,9 @@ struct active_gamepad: public gamepad_type {
   }
 };
 
+
+template<class gamepad_type>
+struct active_joypad: public active_gamepad<gamepad_type> {
+};
 }
 #endif // _ACTIVE_GAMEPAD_H

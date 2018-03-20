@@ -65,12 +65,12 @@ public:
   bit_analog_t(bit_gamepad_type& aparent): parent(aparent) {}
   
   virtual axis_value_type get(uint8_t i) const {
-    return ( parent.get_buttons() & (analog_mask_traits::BIT_MASKS[i]) ) 
-                               >> (analog_mask_traits::BIT_INDEXES[i])  ;
+    return ( parent.get_state() & (analog_mask_traits::BIT_MASKS[i]) ) 
+                             >> (analog_mask_traits::BIT_INDEXES[i])  ;
   }
   virtual void set(uint8_t i, axis_value_type v) {
-    parent.set_buttons( ( v & (analog_mask_traits::BIT_MASKS[i]) ) 
-                         << (analog_mask_traits::BIT_INDEXES[i]) );
+    parent.set_state( ( v & (analog_mask_traits::BIT_MASKS[i]) ) 
+                       << (analog_mask_traits::BIT_INDEXES[i]) );
   }
 };
 
@@ -86,8 +86,7 @@ struct has_bitmask_analogs
   typedef typename bit_analog_type::uint_type         uint_type;
   typedef bit_gamepad<uint_type>                      bit_gamepad_type;
   
-  static const uint8_t N_ANALOGS = NUMBEROF_ANALOGS;
-  static_assert(NUMBEROF_ANALOGS>=1, "if this class has_analogs, it have to have");
+  static const uint8_t N_ANALOGS = NUMBEROF_ANALOGS; // static_assert(NUMBEROF_ANALOGS>=1);
   
   typedef has_analogs<bit_analog_type, N_ANALOGS> has_analogs_base;
   

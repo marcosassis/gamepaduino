@@ -43,43 +43,52 @@ public:
   : gamepad(id, n_buttons, dpads, n_dpads)
   {}
 
-  virtual bool get_button_state(uint8_t index) const {
-    //return bit_is_set(buttons, index);
-    return buttons & (uint_t(1) << index); // OK
+  bool get_bit_state(uint8_t index) const {
+    return buttons & (uint_t(1) << index);
   }
-
-  virtual void set_button_state(uint8_t index, bool bs) {
-    //bitWrite(buttons,index,bs);
-    
+  void set_bit_state(uint8_t index, bool bs) {
     if (bs)
-      //setb(buttons,index);
-      //SETBIT(buttons,index);
       buttons |= (uint_t(1) << (index));
     else
-      //clrb(buttons,index);
-      //CLEARBIT(buttons,index);
       buttons &= ~(uint_t(1) << (index));
   }
+  virtual bool get_button_state(uint8_t index) const {
+    return get_bit_state(index);
+  }
+  virtual void set_button_state(uint8_t index, bool bs) {
+    set_bit_state(index,bs);
+  }
 
-  virtual uint_type buttons_changed_mask() {
+  virtual uint_type state_changed_mask() {
     return buttons_last ^ buttons;
   }
-  virtual bool any_button_state_has_changed() const {
-    return buttons_changed_mask();
+  virtual bool any_state_has_changed() const {
+    return state_changed_mask();
   }
   virtual bool button_state_has_changed(uint8_t index) const {
-    //return ((buttons_changed_mask()) & _BV(index));
-    return buttons_changed_mask() & (uint_t(1) << index);
+    return bit_state_has_changed(index);
+  }
+  bool bit_state_has_changed(uint8_t index) const {
+    //return ((state_changed_mask()) & _BV(index));
+    return state_changed_mask() & (uint_t(1) << index);
   }
 
   /// each bit is a button, positive logic
-  uint_type get_buttons() const {
+  
+  /// this is virtual because: maybe you want to mask-out non-buttons states (but default is this)
+  virtual uint_type get_buttons() const {
+    return get_state();
+  }
+  virtual void set_buttons(uint_type bu) {
+    set_state(bu);
+  }
+  uint_type get_state() const {
     return buttons;
   }
-  void set_buttons(uint_type bu) {
+  void set_state(uint_type bu) {
     buttons = bu;
   }
-  uint_type get_buttons_last() const {
+  uint_type get_state_last() const {
     return buttons_last;
   }
   
@@ -87,9 +96,9 @@ public:
   /// you must call this bit_gamepad::action_before_read inside yours.
   virtual void action_before_read() {
     _GAMEPAD_DEBUG("bit_gamepad::action_before_read");
-    gamepad::action_before_read();
     buttons_last = buttons;
-    buttons = 0;
+    //buttons = 0;
+    //gamepad::action_before_read();
   }
   
   /// override of buttonset:: 
@@ -99,7 +108,7 @@ public:
     if(verbose>1)
       buttonset::print(verbose, theSerialPrinter);
     else
-      print_bits(buttons, verbose, theSerialPrinter);
+      print_bits(buttons, verbose, theSerialPrinter); // here: print all state (maybe has more than buttons)
   }
   /// override of buttonset::println
   /// same thing as buttonset::print, but assures we call bit_gamepad::print
