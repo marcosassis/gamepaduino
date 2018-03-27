@@ -103,8 +103,8 @@ struct N64_hid: public cal::tracks_analogs_limits<gamepad_joystick<N64_gamepad>,
       else {
         //this->usb_joystick.setXAxisRange(get_min(0), get_max(0));
         //this->usb_joystick.setXAxisRange(get_min(1), get_max(1));
-        this->usb_joystick.setXAxisRange(get_min(0)+1, get_max(0)-1);
-        this->usb_joystick.setXAxisRange(get_min(1)+1, get_max(1)-1);//todo: investigate more this behavior
+        //this->usb_joystick.setXAxisRange(get_min(0)+1, get_max(0)-1);
+        //this->usb_joystick.setXAxisRange(get_min(1)+1, get_max(1)-1);//todo: investigate more this behavior
         
         this->usb_joystick.setXAxis(get_x());//*1.05);//_cal()*127);
         this->usb_joystick.setYAxis(get_y());//*1.05);//_cal()*127);

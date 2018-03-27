@@ -19,11 +19,11 @@ struct pitch_wheel: public midi_instrument_type
   : midi_instrument_base(base)
   {}
   
-  virtual void action_any_button_changed() {
-    midi_instrument_base::action_any_button_changed();
+  virtual void action_any_state_changed() {
+    midi_instrument_base::action_any_state_changed();
     
-    Serial.print(gamepad_t::get_x_cal()); Serial.print("\t\t");
-    Serial.print(gamepad_t::get_x()); Serial.print("\t\t");
+    //Serial.print(gamepad_t::get_x_cal()); Serial.print("\t\t");
+    //Serial.print(gamepad_t::get_x()); Serial.print("\t\t");
     
     using ::meta::midi::pitch_bend_t;
     using ::meta::midi::pitch_bend_coded_t;
@@ -38,9 +38,11 @@ struct pitch_wheel: public midi_instrument_type
     
     midi_instance().pitch_bend(get_channel(), pb);
     
-    pitch_bend_coded_t pbc(pb.value);
-    Serial.print(pbc._lllllll, HEX); Serial.print("\t\t");
-    Serial.println(pbc._mmmmmmm, HEX);
+    midi_instance().control_change(get_channel(),0x10,abs(get_y()));
+    
+    //pitch_bend_coded_t pbc(pb.value);
+    //Serial.print(pbc._lllllll, HEX); Serial.print("\t\t");
+    //Serial.println(pbc._mmmmmmm, HEX);
   }
 };
 
