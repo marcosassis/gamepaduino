@@ -1,13 +1,13 @@
-#ifndef _MIDI_USB_INTERFACE_H
-#define _MIDI_USB_INTERFACE_H
+#ifndef _META_MIDIUSB_ADAPTER_H
+#define _META_MIDIUSB_ADAPTER_H
 
 #include "midi_interface.h"
 #include "MIDIUSB.h"
 
 namespace meta { namespace midi {
 
-/// https://www.midi.org/specifications/item/table-1-summary-of-midi-message
-struct midi_usb_interface: public midi_send_interface
+/// adapter for MIDIUSB library with meta::midi:: midi_interface methods inherited
+struct midiusb_sender: public midi_send_interface
 {
   union midi_event_packet_t {
     midiEventPacket_t midiusb_event;
@@ -17,8 +17,8 @@ struct midi_usb_interface: public midi_send_interface
   midi_event_packet_t event;
   
   virtual void send(status_byte data1, data_byte data2, data_byte data3) {
-    event = { voice_message_t(data1).midi_event_type(), // todo: generic for all different status (not only voice m.)
-              data1, data2, data3 };
+    // todo: make generic for all different status (not only voice m.)
+    event = { voice_message_t(data1).midi_event_type(), data1, data2, data3 };
     MidiUSB.sendMIDI(event.midiusb_event);
   }
   
@@ -29,4 +29,4 @@ struct midi_usb_interface: public midi_send_interface
 
 }}
 
-#endif//_MIDI_USB_INTERFACE_H
+#endif//_META_MIDIUSB_ADAPTER_H

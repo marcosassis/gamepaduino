@@ -1,5 +1,5 @@
-#ifndef _ACTIVE_GAMEPAD_H
-#define _ACTIVE_GAMEPAD_H
+#ifndef _META_ACTIVE_GAMEPAD_H
+#define _META_ACTIVE_GAMEPAD_H
 
 #include "gamepad.h"
 
@@ -81,4 +81,4 @@ template<class gamepad_type>
 struct active_joypad: public active_gamepad<gamepad_type> {
 };
 }
-#endif // _ACTIVE_GAMEPAD_H
+#endif // _META_ACTIVE_GAMEPAD_H

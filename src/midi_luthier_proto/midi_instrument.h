@@ -5,7 +5,6 @@
 
 namespace meta {
   using namespace gamepad;
-  // (yes, gamepad library is part of something greater... (spoiler) but, everything takes its time.)
   
   namespace midi { namespace luthier { 
   
