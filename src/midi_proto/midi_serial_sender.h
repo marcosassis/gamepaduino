@@ -1,7 +1,7 @@
 #ifndef _META_MIDI_SERIAL_SENDER_H
 #define _META_MIDI_SERIAL_SENDER_H
 
-#include "midi_interface.h"
+#include "midi_send_interface.h"
 
 namespace meta { namespace midi {
 

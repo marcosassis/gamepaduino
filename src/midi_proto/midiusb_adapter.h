@@ -1,7 +1,7 @@
 #ifndef _META_MIDIUSB_ADAPTER_H
 #define _META_MIDIUSB_ADAPTER_H
 
-#include "midi_interface.h"
+#include "midi_send_interface.h"
 #include "MIDIUSB.h"
 
 namespace meta { namespace midi {

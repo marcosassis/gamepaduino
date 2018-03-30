@@ -1,16 +1,16 @@
 #ifndef _PITCH_WHEEL_H
 #define _PITCH_WHEEL_H
 
-#include "midi_instrument.h"
+#include "midi_controller.h"
 //#include "midi_interface.h"
 
 namespace meta { namespace midi { namespace luthier {
 
-template<class midi_instrument_type>
-struct pitch_wheel: public midi_instrument_type
+template<class midi_controller_Type>
+struct pitch_wheel: public midi_controller_Type
 {
-  typedef          midi_instrument_type             midi_instrument_base;
-  typedef typename midi_instrument_base::gamepad_t  gamepad_t;
+  typedef          midi_controller_Type             midi_controller_type;
+  typedef typename midi_controller_type::gamepad_t  gamepad_t;
   
   typedef  int8_t pitch_bend_t; // todo: generalize pitch_bend_t in midi interface
   
