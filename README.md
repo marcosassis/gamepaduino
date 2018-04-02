@@ -34,16 +34,16 @@ metamero.tumblr.com
 [read multiple controllers on the fly]
 [with cool specialization/optimization for SNES multiplayer protocol]
 [as default implementation is also ultra lean, N64 multiplayer is as fast as possible too]
-    optional, turn on by default, easy to turn off
+    optional, turned on by default, easy to turn off
     this module depends on: 'linked list library'
 ```
 
 ##### `'arduino joystick library' adaptor`
 
 ```
-[go USB HID! make your device appears as joystick/gamepad(s) on your OS(any)]
-[for 'pro micro' board[tested], or any ATmega32U4 board, as 'arduino leonardo']
-    this optional, just include if (you want and) your board is supported by this library
+[go USB HID! make your device(s) appear as a joystick or gamepad in your OS(any)]
+[for 'pro micro' board[tested], or any ATmega32U4 board, such as 'arduino leonardo']
+    this is optional, just include it if (you want to and) your board is supported by this library
     this module depends on: 'arduino joystick library'
 ```
 
@@ -54,10 +54,10 @@ structured interfaces / classes hierarchy
     [template class library]
         robust and meaningful generic interfaces and implementations
         cool specializations / concrete implementations of controllers out-of-the-box
-        flexible options (structured parametrization)
+        flexible options (structured parameterization)
         but with meaningful names, and helpful aliases and includes for beginners
-            the idea is for this library to be *consistently expanded*, and at the same time,
-            *be transparent for beginners*, about this OO/GP internals
+            the idea is for this library to be *consistently expanded*, while remaining
+            *simple for beginners*, thus it's OO/GP internals
 ```
 
 ##### `and most important`
