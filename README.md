@@ -80,7 +80,10 @@ examples!
 ##### `notes`
 
 > 
-> _all creative non-code work here is [licensed](https://creativecommons.org/licenses/by-sa/2.0/) by (cc-by-sa) marcos assis_
+> _code is [licensed](https://github.com/marcosassis/gamepaduino/blob/master/LICENSE) by (LGPL3) marcos assis 2018_
+
+> 
+> _all creative non-code work here is [licensed](https://creativecommons.org/licenses/by-sa/2.0/) by (cc-by-sa) marcos assis 2018_
 
 > 
 > _this library is in early stage of development_. 
