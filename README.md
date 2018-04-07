@@ -79,14 +79,18 @@ examples!
 
 ##### `notes`
 
+<sub>
+
 > 
 > _code is [licensed](https://github.com/marcosassis/gamepaduino/blob/master/LICENSE) by (LGPL3) marcos assis 2018_
-
+> 
 > 
 > _all creative non-code work here is [licensed](https://creativecommons.org/licenses/by-sa/2.0/) by (cc-by-sa) marcos assis 2018_
-
+> 
 > 
 > _this library is in early stage of development_. 
 > _so please [report bugs](https://github.com/marcosassis/gamepaduino/issues) or feedback me about development and user [experience](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg)_.
+
+</sub>
 
 ----
