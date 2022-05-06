@@ -73,9 +73,6 @@ examples!
 
 [`wiki`](https://github.com/marcosassis/gamepaduino/wiki)
 
-## `contact`
-
-[`telegram group`](https://t.me/joinchat/B4GWUEiFR6LvA_47JwIgQg) `[pt-br + en]`
 
 ##### `notes`
 
